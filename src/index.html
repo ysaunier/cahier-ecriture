@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Cahier d'écriture</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self'; img-src 'self' data:">
+<link rel="stylesheet" href="styles.css">
+<style id="pageRule">@page { size: letter; margin: 0; }</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><img src="../build/icon.png" alt="">Cahier d'écriture</div>
+  <nav class="tabs" role="tablist" aria-label="Exercices">
+    <button role="tab" id="tab-ecriture" data-tab="ecriture" aria-controls="ex-ecriture">Écriture<kbd>Ctrl+1</kbd></button>
+    <button role="tab" id="tab-calcul" data-tab="calcul" aria-controls="ex-calcul">Calcul<kbd>Ctrl+2</kbd></button>
+  </nav>
+  <div class="actions">
+    <button id="btn-pdf" class="ghost" type="button" title="Enregistrer en PDF (Ctrl+S)">PDF</button>
+    <button id="btn-print" class="primary" type="button" title="Imprimer (Ctrl+P)">Imprimer</button>
+    <button id="btn-help" class="round" type="button" title="Aide (F1)" aria-label="Aide">?</button>
+  </div>
+</header>
+
+<!-- ================= Écriture ================= -->
+<section class="exercise" id="ex-ecriture" role="tabpanel" aria-labelledby="tab-ecriture">
+  <aside id="e-panel">
+    <h2>Écriture</h2>
+    <p class="sub">Modèle, trait plein à repasser, tirets, puis seule.</p>
+
+    <label for="e-txt">Mots ou phrases <small>un par ligne, avec le vrai rendu de la feuille</small>
+      <textarea id="e-txt" spellcheck="false">Papa
+Maman</textarea>
+    </label>
+
+    <fieldset>
+      <legend>Police</legend>
+      <select id="e-font" aria-label="Police">
+        <option value="Playwrite FR Trad">Playwrite FR Trad (cursive scolaire)</option>
+        <option value="Playwrite FR Moderne">Playwrite FR Moderne</option>
+        <option value="__custom">Autre police installée sur l'ordinateur…</option>
+      </select>
+      <div id="e-customBox" class="grid2" hidden>
+        <label for="e-customFont">Nom<input id="e-customFont" type="text" placeholder="Ecolier"></label>
+        <label for="e-dotFont">Pointillée<input id="e-dotFont" type="text" placeholder="optionnel"></label>
+      </div>
+      <label class="check" for="e-caps"><input id="e-caps" type="checkbox" checked> Majuscules en lettres bâton</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Page</legend>
+      <label for="e-paper">Format du papier<select id="e-paper" class="paper-select"></select></label>
+      <label for="e-size">Réglure Seyès
+        <select id="e-size">
+          <option value="4">Très grand (interligne 4 mm), GS</option>
+          <option value="3" selected>Grand (interligne 3 mm), CP</option>
+          <option value="2">Standard (interligne 2 mm), cahier classique</option>
+        </select>
+      </label>
+      <label class="check" for="e-skip"><input id="e-skip" type="checkbox" checked> Sauter une ligne entre chaque rangée</label>
+      <label class="check" for="e-header"><input id="e-header" type="checkbox" checked> « Prénom / Date » en haut</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Lignes par mot</legend>
+      <div class="grid3">
+        <label for="e-nGray">Trait plein<input id="e-nGray" type="number" min="0" max="10" value="2"></label>
+        <label for="e-nDot">Tirets<input id="e-nDot" type="number" min="0" max="10" value="2"></label>
+        <label for="e-nEmpty">Sans aide<input id="e-nEmpty" type="number" min="0" max="10" value="2"></label>
+      </div>
+      <label class="check" for="e-repeat"><input id="e-repeat" type="checkbox" checked> Répéter le mot sur toute la ligne</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Lettres</legend>
+      <label for="e-adj">Taille <small id="e-adjVal">100 %</small>
+        <input id="e-adj" type="range" min="70" max="140" value="100" step="5">
+      </label>
+      <label for="e-bold">Épaisseur du trait <small id="e-boldVal">normal</small>
+        <input id="e-bold" type="range" min="0" max="4" value="1" step="1">
+      </label>
+    </fieldset>
+  </aside>
+  <main class="pages" id="e-pages" aria-label="Aperçu des feuilles d'écriture"></main>
+</section>
+
+<!-- ================= Calcul ================= -->
+<section class="exercise" id="ex-calcul" role="tabpanel" aria-labelledby="tab-calcul" hidden>
+  <aside id="c-panel">
+    <h2>Calcul</h2>
+    <p class="sub">Des opérations à compléter, avec ou sans corrigé.</p>
+
+    <fieldset>
+      <legend>Opérations</legend>
+      <div class="chips">
+        <label class="chip" for="c-add"><input id="c-add" type="checkbox" checked> + addition</label>
+        <label class="chip" for="c-sub"><input id="c-sub" type="checkbox" checked> − soustraction</label>
+        <label class="chip" for="c-mul"><input id="c-mul" type="checkbox"> × multiplication</label>
+        <label class="chip" for="c-div"><input id="c-div" type="checkbox"> : division</label>
+      </div>
+      <div class="grid2">
+        <label for="c-min">Nombres de<input id="c-min" type="number" min="0" max="999" value="0"></label>
+        <label for="c-max">à<input id="c-max" type="number" min="1" max="999" value="10"></label>
+      </div>
+      <p class="hint">Les soustractions ne donnent jamais de résultat négatif, et les divisions tombent toujours juste.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Place du trou</legend>
+      <div class="seg" role="radiogroup" aria-label="Place du trou">
+        <label for="c-hole-after"><input type="radio" name="c-hole" id="c-hole-after" value="after" checked>Résultat</label>
+        <label for="c-hole-before"><input type="radio" name="c-hole" id="c-hole-before" value="before">Avant le =</label>
+        <label for="c-hole-mixed"><input type="radio" name="c-hole" id="c-hole-mixed" value="mixed">Mélangé</label>
+      </div>
+      <div class="preview-eq" id="c-preview" aria-live="polite">2 + 2 = ☐</div>
+      <div class="seg" role="radiogroup" aria-label="Forme du trou">
+        <label for="c-hs-box"><input type="radio" name="c-holeStyle" id="c-hs-box" value="box" checked>Case</label>
+        <label for="c-hs-line"><input type="radio" name="c-holeStyle" id="c-hs-line" value="line">Ligne ___</label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Feuille</legend>
+      <div class="grid2">
+        <label for="c-count">Nombre de calculs<input id="c-count" type="number" min="1" max="200" value="20"></label>
+        <label for="c-cols">Colonnes<input id="c-cols" type="number" min="1" max="4" value="2"></label>
+      </div>
+      <label for="c-title">Titre <small>optionnel</small><input id="c-title" type="text" placeholder="Les additions"></label>
+      <label for="c-paper">Format du papier<select id="c-paper" class="paper-select"></select></label>
+      <label for="c-ruling">Fond
+        <select id="c-ruling">
+          <option value="grid">Petits carreaux (5 mm)</option>
+          <option value="seyes">Seyès (grands carreaux)</option>
+          <option value="none">Blanc</option>
+        </select>
+      </label>
+      <label for="c-font">Chiffres
+        <select id="c-font">
+          <option value="Playwrite FR Moderne">Écriture scolaire (Playwrite Moderne)</option>
+          <option value="Playwrite FR Trad">Cursive (Playwrite Trad)</option>
+          <option value="Segoe UI">Imprimerie (Segoe UI)</option>
+        </select>
+      </label>
+      <label for="c-size">Taille des chiffres <small id="c-sizeVal">7 mm</small>
+        <input id="c-size" type="range" min="4" max="14" value="7" step="1">
+      </label>
+      <label class="check" for="c-header"><input id="c-header" type="checkbox" checked> « Prénom / Date » en haut</label>
+      <label class="check" for="c-numbers"><input id="c-numbers" type="checkbox" checked> Numéroter les calculs</label>
+      <label class="check" for="c-answers"><input id="c-answers" type="checkbox" checked> Ajouter une page de corrigé</label>
+    </fieldset>
+
+    <button id="c-new" class="ghost" type="button">Nouveaux calculs</button>
+    <input id="c-seed" type="hidden" value="20261124">
+  </aside>
+  <main class="pages" id="c-pages" aria-label="Aperçu des feuilles de calcul"></main>
+</section>
+
+<div id="toast" class="toast" role="status" hidden></div>
+
+<!-- ================= Aide ================= -->
+<dialog id="help" aria-labelledby="help-title">
+  <div class="help-head">
+    <img src="../build/icon.png" alt="">
+    <div>
+      <h2 id="help-title">Cahier d'écriture</h2>
+      <div class="ver" id="help-version"></div>
+    </div>
+    <button class="round" id="help-close" type="button" aria-label="Fermer l'aide">✕</button>
+  </div>
+  <div class="help-body">
+    <h3 id="help-start">Pour commencer</h3>
+    <p>Choisis un exercice avec les onglets en haut (ou le menu <b>Exercices</b>). Règle la feuille dans le panneau de gauche : l'aperçu à droite se met à jour tout seul. Tes réglages sont gardés d'une fois sur l'autre.</p>
+
+    <h3>Écriture</h3>
+    <ul>
+      <li>Écris un mot ou une phrase par ligne. La zone de saisie montre déjà le rendu de la feuille : cursive liée, majuscules en lettres bâton.</li>
+      <li>Chaque mot donne une ligne modèle, puis des lignes en <b>trait plein</b> gris à repasser, des lignes en <b>tirets</b> qui suivent le chemin du crayon, et des lignes <b>sans aide</b>.</li>
+      <li>La réglure Seyès « Grand (3 mm) » convient bien au CP ; « Très grand » pour la grande section.</li>
+      <li>Pour une police installée sur l'ordinateur (Écolier, Belle Allure…), choisis « Autre police » et tape son nom exact.</li>
+    </ul>
+
+    <h3>Calcul</h3>
+    <ul>
+      <li>Coche les opérations voulues et l'intervalle des nombres (par exemple de 0 à 10).</li>
+      <li><b>Place du trou</b> : « Résultat » donne <i>2 + 2 = ☐</i>, « Avant le = » donne <i>4 − ☐ = 2</i>, « Mélangé » alterne les deux.</li>
+      <li><b>Nouveaux calculs</b> tire une nouvelle série. Tant que tu ne cliques pas, la série reste la même, ce qui permet de réimprimer la même feuille.</li>
+      <li>Le <b>corrigé</b> s'imprime sur une page à part, à la fin.</li>
+    </ul>
+
+    <h3>Imprimer</h3>
+    <p>Le bouton <b>Imprimer</b> envoie uniquement l'onglet affiché, au format choisi (US Letter ou A4), sans marges et à 100 %. Si ton imprimante propose « Ajuster à la page », laisse-le désactivé pour garder les vraies dimensions de la réglure. Le bouton <b>PDF</b> enregistre la feuille et l'ouvre.</p>
+
+    <h3>Raccourcis clavier</h3>
+    <table>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>1</kbd> / <kbd>2</kbd></td><td>Changer d'exercice</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>P</kbd></td><td>Imprimer</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td><td>Enregistrer en PDF</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>+</kbd> / <kbd>-</kbd> / <kbd>0</kbd></td><td>Zoom de l'aperçu</td></tr>
+      <tr><td><kbd>F1</kbd></td><td>Cette aide</td></tr>
+    </table>
+
+    <h3 id="help-news">Nouveautés</h3>
+    <p><b>1.1.0</b> — Onglets et menu, exercice de calcul (opérations, place du trou, corrigé), saisie avec le vrai rendu des majuscules, aide et fenêtre « À propos ».</p>
+    <p><b>1.0.0</b> — Première version : feuilles d'écriture cursive sur réglure Seyès, trait plein, tirets, sans aide.</p>
+
+    <div class="help-foot" id="help-foot"></div>
+  </div>
+</dialog>
+
+<script src="lib/core.js"></script>
+<script src="lib/skeleton.js"></script>
+<script src="exercises/ecriture.js"></script>
+<script src="exercises/calcul.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

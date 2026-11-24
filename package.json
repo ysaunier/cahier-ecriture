@@ -1,0 +1,64 @@
+{
+  "name": "cahier-ecriture",
+  "productName": "Cahier d'écriture",
+  "version": "1.1.0",
+  "description": "Feuilles d'exercices à imprimer pour apprendre à écrire et à calculer : écriture cursive sur réglure Seyès, opérations à trou.",
+  "main": "main.js",
+  "author": {
+    "name": "Yoann Saunier",
+    "email": "yoann@ysaunier.dev",
+    "url": "https://github.com/ysaunier"
+  },
+  "homepage": "https://github.com/ysaunier/cahier-ecriture",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ysaunier/cahier-ecriture.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ysaunier/cahier-ecriture/issues"
+  },
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable nsis"
+  },
+  "build": {
+    "appId": "local.cahier-ecriture",
+    "productName": "Cahier d'écriture",
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "src/**",
+      "fonts/**",
+      "build/icon.png"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "portable",
+        "nsis"
+      ],
+      "icon": "build/icon.png"
+    },
+    "portable": {
+      "artifactName": "Cahier-ecriture-portable.exe",
+      "splashImage": "build/splash.bmp"
+    },
+    "nsis": {
+      "artifactName": "Cahier-ecriture-installation.exe",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Cahier d'écriture",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "copyright": "© 2026 Yoann Saunier"
+  },
+  "devDependencies": {
+    "electron": "^45.4.1",
+    "electron-builder": "^26.18.0"
+  }
+}
