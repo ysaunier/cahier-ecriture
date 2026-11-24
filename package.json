@@ -81,7 +81,10 @@
       "identity": "-",
       "hardenedRuntime": false,
       "gatekeeperAssess": false,
-      "artifactName": "Cahier-ecriture-mac.${ext}"
+      "artifactName": "Cahier-ecriture-mac.${ext}",
+      "extendInfo": {
+        "CFBundleName": "Cahier d'e\u0301criture"
+      }
     },
     "dmg": {
       "title": "Cahier d'écriture",
