@@ -24,7 +24,7 @@ L'application n'est pas signée. Sous Windows, SmartScreen demande une confirmat
 ## Un problème, une question ?
 
 - **Signaler un bug** : [ouvrir une issue](https://github.com/ysaunier/cahier-ecriture/issues/new?template=bug.yml) avec le modèle prévu. Depuis l'application, le menu **Aide › Signaler un problème…** remplit déjà la version et le système.
-- **Contact** : [yoann@ysaunier.dev](mailto:yoann@ysaunier.dev), ou **Aide › Nous écrire…** dans l'application.
+- **Contact** : [contact@ysaunier.dev](mailto:contact@ysaunier.dev), ou **Aide › Nous écrire…** dans l'application.
 
 ## Exercices
 

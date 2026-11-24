@@ -18,8 +18,9 @@ function bugReportUrl(pkg, env) {
   return `${pkg.bugs.url}/new?${params}`;
 }
 
+/** Courriel de contact : champ standard « bugs.email » du package.json. */
 function contactEmail(pkg) {
-  return typeof pkg.author === "object" ? pkg.author.email : null;
+  return (pkg.bugs && pkg.bugs.email) || null;
 }
 
 /** Courriel pré-rempli : objet avec le nom et la version, système en bas du message. */

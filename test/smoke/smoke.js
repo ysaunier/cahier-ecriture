@@ -28,7 +28,7 @@ async function waitFor(win, expr, timeout = 15000) {
   return false;
 }
 
-ipcMain.handle("cahier:info", () => ({ name: pkg.productName, version: pkg.version, author: pkg.author.name, email: pkg.author.email, electron: process.versions.electron }));
+ipcMain.handle("cahier:info", () => ({ name: pkg.productName, version: pkg.version, author: pkg.author.name, email: pkg.bugs.email, electron: process.versions.electron }));
 
 app.whenReady().then(async () => {
   const win = new BrowserWindow({
@@ -64,7 +64,7 @@ app.whenReady().then(async () => {
     await js(`document.getElementById("btn-help").click()`);
     check("aide : s'ouvre", await js(`document.getElementById("help").open`));
     check("aide : version affichée", await waitFor(win, `document.getElementById("help-version").textContent.includes(${JSON.stringify(pkg.version)})`));
-    check("aide : courriel de contact affiché", await waitFor(win, `document.getElementById("help-email").textContent.includes(${JSON.stringify(pkg.author.email)})`));
+    check("aide : courriel de contact affiché", await waitFor(win, `document.getElementById("help-email").textContent.includes(${JSON.stringify(pkg.bugs.email)})`));
     check("aide : bouton « Signaler un problème »", await js(`!document.getElementById("help-bug").hidden`));
     await js(`document.getElementById("help").close()`);
 

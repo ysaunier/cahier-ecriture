@@ -28,9 +28,10 @@ test("rapport de bug : pointe vers le modèle et remplit des champs qui existent
   assert.equal(url.searchParams.get("os"), "macOS 26.7.3 (arm64)");
 });
 
-test("contact : mailto vers l'auteur, objet encodé avec %20", () => {
+test("contact : mailto vers contact@, objet encodé avec %20", () => {
+  assert.equal(pkg.bugs.email, "contact@ysaunier.dev");
   const url = contactUrl(pkg, env);
-  assert.ok(url.startsWith(`mailto:${pkg.author.email}?subject=`));
+  assert.ok(url.startsWith("mailto:contact@ysaunier.dev?subject="));
   assert.ok(!url.includes("+"), "les espaces ne doivent pas devenir « + » dans un mailto");
   assert.equal(decodeURIComponent(url.split("subject=")[1].split("&")[0]), `${pkg.productName} ${pkg.version}`);
 });

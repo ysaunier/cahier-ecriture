@@ -15,7 +15,8 @@
     "url": "https://github.com/ysaunier/cahier-ecriture.git"
   },
   "bugs": {
-    "url": "https://github.com/ysaunier/cahier-ecriture/issues"
+    "url": "https://github.com/ysaunier/cahier-ecriture/issues",
+    "email": "contact@ysaunier.dev"
   },
   "license": "UNLICENSED",
   "scripts": {
