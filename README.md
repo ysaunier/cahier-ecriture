@@ -1,6 +1,21 @@
 # Cahier d'écriture
 
-Application Windows (Electron) qui prépare des feuilles d'exercices à imprimer pour apprendre à écrire et à calculer.
+[![CI](https://github.com/ysaunier/cahier-ecriture/actions/workflows/ci.yml/badge.svg)](https://github.com/ysaunier/cahier-ecriture/actions/workflows/ci.yml)
+[![Dernière version](https://img.shields.io/github/v/release/ysaunier/cahier-ecriture?label=version)](https://github.com/ysaunier/cahier-ecriture/releases/latest)
+
+Application Windows et macOS (Electron) qui prépare des feuilles d'exercices à imprimer pour apprendre à écrire et à calculer.
+
+## Télécharger
+
+Dernière version : [page des Releases](https://github.com/ysaunier/cahier-ecriture/releases/latest).
+
+| Système | Fichier |
+| --- | --- |
+| Windows (installation) | `Cahier-ecriture-installation.exe` |
+| Windows (sans installation) | `Cahier-ecriture-portable.exe` |
+| macOS (Intel et Apple Silicon) | `Cahier-ecriture-mac.dmg` |
+
+L'application n'est pas signée. Sous Windows, SmartScreen demande une confirmation (« Informations complémentaires », puis « Exécuter quand même »). Sous macOS, fais un clic droit sur l'app, puis « Ouvrir » ; si macOS la dit endommagée : `xattr -cr "/Applications/Cahier d'écriture.app"`.
 
 ## Exercices
 
@@ -16,36 +31,64 @@ npm install
 npm start
 ```
 
-## Construire les exécutables
+| Commande | Rôle |
+| --- | --- |
+| `npm run lint` | Vérifie le code (ESLint) |
+| `npm test` | Tests unitaires (tirage des calculs, notes de version) |
+| `npm run test:smoke` | Ouvre la vraie interface dans Electron et vérifie les deux exercices et l'export PDF |
+| `npm run check` | Les trois à la suite |
+| `npm run dist` | Construit les `.exe` Windows dans `dist/` |
+| `npm run dist:mac` | Construit le `.dmg` macOS (sur un Mac uniquement) |
 
-```powershell
-npm run dist
-```
+NSIS ne lit pas les chemins de plus de 260 caractères : si `npm run dist` échoue sur `extractAppPackage.nsh`, copie le projet dans un dossier au chemin court (par exemple `C:\dev\cahier`).
 
-Les fichiers sortent dans `dist/` : `Cahier-ecriture-installation.exe` et `Cahier-ecriture-portable.exe`.
-NSIS ne lit pas les chemins de plus de 260 caractères : si la construction échoue sur `extractAppPackage.nsh`, copie le projet dans un dossier au chemin court (par exemple `C:\dev\cahier`) avant de lancer `npm run dist`.
+## Intégration et livraison continues
+
+| Workflow | Quand | Ce qu'il fait |
+| --- | --- | --- |
+| [CI](.github/workflows/ci.yml) | chaque push sur `main` et chaque pull request | lint, tests unitaires, test de l'app sous Windows et macOS |
+| [Release](.github/workflows/release.yml) | chaque tag `vX.Y.Z` | vérifie que le tag correspond au `package.json`, relance les tests, construit Windows et macOS, publie la Release avec les notes du CHANGELOG |
+| [Dependabot](.github/dependabot.yml) | chaque semaine | propose les mises à jour d'Electron, des outils et des actions |
+
+Lancé à la main depuis l'onglet Actions, le workflow Release construit seulement les fichiers (téléchargeables dans le résumé du run), sans rien publier. Un tag avec un tiret (`v1.2.0-beta.1`) publie une préversion.
+
+### Publier une version
+
+1. Ajouter une section `## X.Y.Z — date` en haut de `CHANGELOG.md`, et la même version dans la section « Nouveautés » de l'aide (`src/index.html`).
+2. Changer la version, créer le commit et le tag, puis pousser :
+
+   ```powershell
+   npm version patch   # ou minor / major
+   git push --follow-tags
+   ```
+
+3. Le workflow Release publie la Release quand les builds Windows et macOS ont réussi. Les tests refusent une version sans entrée dans le CHANGELOG ou dans l'aide.
 
 ## Organisation du code
 
 ```
-main.js              fenêtre, menu, impression, PDF, « À propos »
-preload.js           pont sécurisé entre la fenêtre et main.js
-src/index.html       interface : onglets, panneaux, aide
-src/styles.css       styles, polices intégrées, règles d'impression
-src/app.js           onglets, menu, impression, aide
-src/lib/core.js      papier (Seyès, quadrillage), réglages mémorisés, hasard reproductible
-src/lib/skeleton.js  tirets sur la ligne médiane des lettres
-src/exercises/       un fichier par exercice
-fonts/               Playwrite FR Trad et Moderne (SIL OFL 1.1)
-build/icon.png       icône de l'application
+main.js                fenêtre, menu, impression, PDF, « À propos »
+preload.js             pont sécurisé entre la fenêtre et main.js
+src/index.html         interface : onglets, panneaux, aide
+src/styles.css         styles, polices intégrées, règles d'impression
+src/app.js             onglets, menu, impression, aide
+src/lib/core.js        papier (Seyès, quadrillage), réglages mémorisés
+src/lib/math-gen.js    tirage des calculs (aussi utilisé par les tests)
+src/lib/skeleton.js    tirets sur la ligne médiane des lettres
+src/exercises/         un fichier par exercice
+test/unit/             tests unitaires (node:test)
+test/smoke/            test de l'app complète dans Electron
+scripts/               notes de version tirées du CHANGELOG
+fonts/                 Playwrite FR Trad et Moderne (SIL OFL 1.1)
+build/                 icône et écran de démarrage
 ```
 
 ### Ajouter un exercice
 
-1. Créer `src/exercises/mon-exercice.js` qui appelle `Cahier.register({ id, label, paperKey, init, render })`.
+1. Créer `src/exercises/mon-exercice.js` qui appelle `Cahier.register({ id, label, paperKey, init, render })`. Mettre la logique sans interface dans `src/lib/` pour pouvoir la tester comme `math-gen.js`.
 2. Ajouter dans `src/index.html` un bouton d'onglet `tab-<id>` et une section `ex-<id>` (panneau `aside` + `main.pages`), puis la balise `<script>`.
 3. Ajouter l'entrée dans `EXERCISES` de `main.js` pour le menu et son raccourci.
-4. Noter la nouveauté dans `CHANGELOG.md` et dans la section « Nouveautés » de l'aide, puis augmenter `version` dans `package.json`.
+4. Ajouter des tests dans `test/unit/` et une vérification dans `test/smoke/smoke.js`.
 
 ## Crédits
 

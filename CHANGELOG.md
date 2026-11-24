@@ -1,5 +1,12 @@
 # Nouveautés
 
+## 1.1.1 — 2026-11-24
+
+- Version **macOS** (Intel et Apple Silicon) : menu de l'application, menu Édition, réouverture depuis le Dock.
+- Menu Aide : liens vers la page du projet et pour signaler un problème ; bouton « Voir sur GitHub » dans « À propos ».
+- Texte d'exemple de l'exercice d'écriture : « Papa » et « Maman ».
+- Tests automatiques et construction des versions Windows et macOS sur GitHub à chaque nouvelle version.
+
 ## 1.1.0 — 2026-11-24
 
 - Onglets et menu (Fichier, Exercices, Affichage, Aide) pour passer d'un exercice à l'autre.

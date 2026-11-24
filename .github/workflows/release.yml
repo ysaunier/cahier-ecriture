@@ -1,0 +1,101 @@
+name: Release
+
+# Pousser un tag vX.Y.Z construit Windows + macOS et publie la Release.
+# Lancé à la main (workflow_dispatch), il construit seulement les fichiers, sans publier.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+
+jobs:
+  verifier:
+    name: Vérifications
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Le tag correspond à la version du package.json
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Le tag est $GITHUB_REF_NAME mais package.json indique $version"
+            exit 1
+          fi
+      - run: npm run lint
+      - run: npm test
+      - name: Notes de version présentes dans le CHANGELOG
+        run: npm run --silent release-notes > /dev/null
+
+  construire:
+    name: Construire (${{ matrix.name }})
+    needs: verifier
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            args: --win portable nsis
+          - name: macOS
+            os: macos-latest
+            args: --mac
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:smoke
+      - name: Construire
+        run: npx electron-builder ${{ matrix.args }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cahier-${{ matrix.name }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  publier:
+    name: Publier la Release
+    needs: construire
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+      - name: Créer la Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/release-notes.js "$GITHUB_REF_NAME" > notes.md
+          prerelease=""
+          case "$GITHUB_REF_NAME" in *-*) prerelease="--prerelease" ;; esac
+          ls -la out
+          gh release create "$GITHUB_REF_NAME" out/* \
+            --title "Cahier d'écriture ${GITHUB_REF_NAME#v}" \
+            --notes-file notes.md \
+            --verify-tag $prerelease

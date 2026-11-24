@@ -50,17 +50,44 @@ function showAbout() {
   });
 }
 
+const IS_MAC = process.platform === "darwin";
+
 function buildMenu() {
   return Menu.buildFromTemplate([
+    // Sur macOS, le premier menu porte le nom de l'application
+    ...(IS_MAC ? [{
+      label: APP_NAME,
+      submenu: [
+        { label: `À propos de ${APP_NAME}`, click: showAbout },
+        { type: "separator" },
+        { label: `Masquer ${APP_NAME}`, role: "hide" },
+        { label: "Masquer les autres", role: "hideOthers" },
+        { label: "Tout afficher", role: "unhide" },
+        { type: "separator" },
+        { label: `Quitter ${APP_NAME}`, role: "quit" },
+      ],
+    }] : []),
     {
       label: "&Fichier",
       submenu: [
         { label: "Imprimer…", accelerator: "CmdOrCtrl+P", click: () => send("print") },
         { label: "Enregistrer en PDF…", accelerator: "CmdOrCtrl+S", click: () => send("pdf") },
-        { type: "separator" },
-        { label: "Quitter", accelerator: "Alt+F4", role: "quit" },
+        ...(IS_MAC ? [] : [{ type: "separator" }, { label: "Quitter", accelerator: "Alt+F4", role: "quit" }]),
       ],
     },
+    // Édition : nécessaire sur macOS pour copier/coller dans les champs
+    ...(IS_MAC ? [{
+      label: "Édition",
+      submenu: [
+        { label: "Annuler", role: "undo" },
+        { label: "Rétablir", role: "redo" },
+        { type: "separator" },
+        { label: "Couper", role: "cut" },
+        { label: "Copier", role: "copy" },
+        { label: "Coller", role: "paste" },
+        { label: "Tout sélectionner", role: "selectAll" },
+      ],
+    }] : []),
     {
       label: "&Exercices",
       submenu: EXERCISES.map((ex, i) => ({
@@ -87,8 +114,7 @@ function buildMenu() {
         { label: "Nouveautés", click: () => send("news") },
         { label: "Page du projet sur GitHub", click: () => shell.openExternal(pkg.homepage) },
         { label: "Signaler un problème", click: () => shell.openExternal(pkg.bugs.url) },
-        { type: "separator" },
-        { label: `À propos de ${APP_NAME}`, click: showAbout },
+        ...(IS_MAC ? [] : [{ type: "separator" }, { label: `À propos de ${APP_NAME}`, click: showAbout }]),
       ],
     },
   ]);
@@ -165,3 +191,5 @@ ipcMain.handle("cahier:pdf", async (_e, paper, label) => {
 app.setAppUserModelId("local.cahier-ecriture"); // même valeur que build.appId (retiré du package.json embarqué)
 app.whenReady().then(createWindow);
 app.on("window-all-closed", () => app.quit());
+// macOS : un clic sur l'icône du Dock rouvre la fenêtre si elle a été fermée
+app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });

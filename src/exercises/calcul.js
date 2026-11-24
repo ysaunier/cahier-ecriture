@@ -5,12 +5,7 @@
   const STORE_KEY = "cahier-calcul";
   const FIELDS = ["add", "sub", "mul", "div", "min", "max", "count", "cols", "title", "paper", "ruling", "font", "size", "header", "numbers", "answers", "seed"];
   const RADIOS = ["hole", "holeStyle"];
-  const OPS = {
-    add: { sym: "+", calc: (a, b) => a + b },
-    sub: { sym: "−", calc: (a, b) => a - b },
-    mul: { sym: "×", calc: (a, b) => a * b },
-    div: { sym: ":", calc: (a, b) => a / b },
-  };
+  const { OPS, generate } = C.mathGen;
   const MARGIN_X = 20, TOP = 14;
   const INK = "#1b2a55", ANSWER = "#c92a2a";
 
@@ -37,37 +32,6 @@
       answers: $(P + "answers").checked,
       seed: int("seed", 1),
     };
-  }
-
-  /* ---- Tirage des calculs (reproductible grâce à la graine) ---- */
-  function generate(c) {
-    if (!c.ops.length) return [];
-    const rnd = C.rng(c.seed);
-    const ri = (a, b) => a + Math.floor(rnd() * (b - a + 1));
-    const items = [], seen = new Set();
-    for (let tries = 0; items.length < c.count && tries < c.count * 60; tries++) {
-      const op = c.ops[ri(0, c.ops.length - 1)];
-      let a, b;
-      if (op === "div") {
-        b = ri(Math.max(1, c.min), Math.max(1, c.max)); // diviseur jamais nul
-        a = b * ri(c.min, c.max);                        // division exacte
-      } else {
-        a = ri(c.min, c.max); b = ri(c.min, c.max);
-        if (op === "sub" && b > a) [a, b] = [b, a];       // jamais de résultat négatif
-      }
-      const r = OPS[op].calc(a, b);
-      // 0 = premier terme, 1 = second terme, 2 = résultat
-      const hole = c.hole === "after" ? 2 : c.hole === "before" ? ri(0, 1) : ri(0, 2);
-      // Écarte les trous à plusieurs réponses possibles (0 × ☐ = 0, 0 : ☐ = 0)
-      const ambiguous = (op === "mul" && ((hole === 0 && b === 0) || (hole === 1 && a === 0)))
-        || (op === "div" && hole === 1 && a === 0);
-      if (ambiguous) continue;
-      const key = `${a}${op}${b}${hole}`;
-      if (seen.has(key) && tries < c.count * 40) continue; // évite les doublons tant que possible
-      seen.add(key);
-      items.push({ a, b, r, op, hole });
-    }
-    return items;
   }
 
   function updatePreview(c) {
