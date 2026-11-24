@@ -19,6 +19,15 @@ test("notesFor : extrait seulement la section demandée", () => {
   assert.equal(notesFor(md, "3.0.0"), null);
 });
 
+test("les captures citées dans les notes de version existent", () => {
+  const script = fs.readFileSync(path.join(__dirname, "..", "..", "scripts", "release-notes.js"), "utf8");
+  const shots = [...script.matchAll(/\$\{SHOTS\}\/([\w.-]+\.png)/g)].map(m => m[1]);
+  assert.ok(shots.length >= 2, "aucune capture trouvée dans les notes");
+  for (const f of shots) {
+    assert.ok(fs.existsSync(path.join(__dirname, "..", "..", "docs", "screenshots", f)), `docs/screenshots/${f} manquant`);
+  }
+});
+
 test("l'aide intégrée mentionne la version courante", () => {
   const html = fs.readFileSync(path.join(__dirname, "..", "..", "src", "index.html"), "utf8");
   assert.ok(html.includes(`<b>${pkg.version}</b>`), `Ajoute ${pkg.version} dans la section « Nouveautés » de l'aide`);

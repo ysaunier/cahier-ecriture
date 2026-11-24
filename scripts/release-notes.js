@@ -13,6 +13,15 @@ function notesFor(markdown, version) {
   return lines.slice(start + 1, end).join("\n").trim() + "\n";
 }
 
+// Captures servies depuis main : adresse absolue, car les notes de Release n'acceptent pas de chemin relatif
+const SHOTS = "https://raw.githubusercontent.com/ysaunier/cahier-ecriture/main/docs/screenshots";
+const SCREENSHOTS = `## Aperçu
+
+| Écriture | Calcul |
+| --- | --- |
+| ![Exercice d'écriture : modèle, trait plein à repasser, tirets, sur réglure Seyès](${SHOTS}/ecriture.png) | ![Exercice de calcul : additions à compléter sur petits carreaux](${SHOTS}/calcul.png) |
+`;
+
 const DOWNLOADS = `## Téléchargement
 
 | Système | Fichier |
@@ -34,7 +43,7 @@ if (require.main === module) {
     console.error(`Aucune section « ## ${version} » dans CHANGELOG.md`);
     process.exit(1);
   }
-  process.stdout.write(`${DOWNLOADS}\n## Nouveautés\n\n${notes}`);
+  process.stdout.write(`${SCREENSHOTS}\n${DOWNLOADS}\n## Nouveautés\n\n${notes}`);
 }
 
 module.exports = { notesFor };

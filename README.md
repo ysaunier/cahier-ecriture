@@ -5,6 +5,10 @@
 
 Application Windows et macOS (Electron) qui prépare des feuilles d'exercices à imprimer pour apprendre à écrire et à calculer.
 
+| Écriture | Calcul |
+| --- | --- |
+| ![Exercice d'écriture : modèle, trait plein à repasser, tirets, sur réglure Seyès](docs/screenshots/ecriture.png) | ![Exercice de calcul : additions à compléter sur petits carreaux](docs/screenshots/calcul.png) |
+
 ## Télécharger
 
 Dernière version : [page des Releases](https://github.com/ysaunier/cahier-ecriture/releases/latest).
