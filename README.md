@@ -21,6 +21,11 @@ Dernière version : [page des Releases](https://github.com/ysaunier/cahier-ecrit
 
 L'application n'est pas signée. Sous Windows, SmartScreen demande une confirmation (« Informations complémentaires », puis « Exécuter quand même »). Sous macOS, fais un clic droit sur l'app, puis « Ouvrir » ; si macOS la dit endommagée : `xattr -cr "/Applications/Cahier d'écriture.app"`.
 
+## Un problème, une question ?
+
+- **Signaler un bug** : [ouvrir une issue](https://github.com/ysaunier/cahier-ecriture/issues/new?template=bug.yml) avec le modèle prévu. Depuis l'application, le menu **Aide › Signaler un problème…** remplit déjà la version et le système.
+- **Contact** : [yoann@ysaunier.dev](mailto:yoann@ysaunier.dev), ou **Aide › Nous écrire…** dans l'application.
+
 ## Exercices
 
 | Onglet | Ce que fait la feuille |
@@ -73,6 +78,7 @@ Lancé à la main depuis l'onglet Actions, le workflow Release construit seuleme
 ```
 main.js                fenêtre, menu, impression, PDF, « À propos »
 preload.js             pont sécurisé entre la fenêtre et main.js
+support.js             liens d'assistance : rapport de bug pré-rempli, courriel
 src/index.html         interface : onglets, panneaux, aide
 src/styles.css         styles, polices intégrées, règles d'impression
 src/app.js             onglets, menu, impression, aide

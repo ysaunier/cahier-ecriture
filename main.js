@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, dialog, Menu, shell, nativeImage } = requir
 const path = require("path");
 const fs = require("fs/promises");
 const pkg = require("./package.json");
+const support = require("./support.js");
 
 const APP_NAME = pkg.productName;
 const AUTHOR = typeof pkg.author === "string" ? pkg.author : pkg.author.name;
@@ -13,6 +14,19 @@ const EXERCISES = [
 ];
 
 let win;
+
+// Version et système joints aux rapports de bug et aux courriels de contact
+const supportEnv = () => ({
+  platform: process.platform,
+  systemVersion: process.getSystemVersion(),
+  arch: process.arch,
+  electron: process.versions.electron,
+});
+const openSupport = name => {
+  const url = support.supportLink(name, pkg, supportEnv());
+  if (url) shell.openExternal(url);
+};
+const EMAIL = support.contactEmail(pkg);
 
 // Une seule fenêtre : relancer l'app ramène la fenêtre existante au premier plan
 if (!app.requestSingleInstanceLock()) app.quit();
@@ -33,6 +47,7 @@ function showAbout() {
     detail: [
       `Version ${app.getVersion()}`,
       `Auteur : ${AUTHOR}`,
+      ...(EMAIL ? [`Contact : ${EMAIL}`] : []),
       "",
       pkg.description,
       "",
@@ -41,12 +56,13 @@ function showAbout() {
       "",
       pkg.homepage,
     ].join("\n"),
-    buttons: ["Fermer", "Voir sur GitHub"],
+    buttons: ["Fermer", "Voir sur GitHub", "Signaler un problème"],
     defaultId: 0,
     cancelId: 0,
     noLink: true,
   }).then(({ response }) => {
-    if (response === 1) shell.openExternal(pkg.homepage);
+    if (response === 1) openSupport("home");
+    else if (response === 2) openSupport("bug");
   });
 }
 
@@ -112,8 +128,10 @@ function buildMenu() {
       submenu: [
         { label: "Aide", accelerator: "F1", click: () => send("help") },
         { label: "Nouveautés", click: () => send("news") },
-        { label: "Page du projet sur GitHub", click: () => shell.openExternal(pkg.homepage) },
-        { label: "Signaler un problème", click: () => shell.openExternal(pkg.bugs.url) },
+        { type: "separator" },
+        { label: "Signaler un problème…", click: () => openSupport("bug") },
+        ...(EMAIL ? [{ label: "Nous écrire…", click: () => openSupport("contact") }] : []),
+        { label: "Page du projet sur GitHub", click: () => openSupport("home") },
         ...(IS_MAC ? [] : [{ type: "separator" }, { label: `À propos de ${APP_NAME}`, click: showAbout }]),
       ],
     },
@@ -152,8 +170,12 @@ ipcMain.handle("cahier:info", () => ({
   name: APP_NAME,
   version: app.getVersion(),
   author: AUTHOR,
+  email: EMAIL,
   electron: process.versions.electron,
 }));
+
+// La fenêtre ne passe qu'un nom de lien ; l'URL est choisie ici (liste fermée)
+ipcMain.handle("cahier:open", (_e, name) => openSupport(String(name)));
 
 ipcMain.handle("cahier:print", (_e, paper) => new Promise(resolve => {
   win.webContents.print({

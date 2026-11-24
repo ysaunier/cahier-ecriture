@@ -15,7 +15,7 @@ module.exports = [
   },
   {
     // Processus principal, preload, scripts et tests : Node.js (CommonJS)
-    files: ["main.js", "preload.js", "eslint.config.js", "scripts/**/*.js", "test/**/*.js"],
+    files: ["main.js", "preload.js", "support.js", "eslint.config.js", "scripts/**/*.js", "test/**/*.js"],
     languageOptions: {
       ecmaVersion: 2023,
       sourceType: "commonjs",
