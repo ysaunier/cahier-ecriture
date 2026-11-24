@@ -1,7 +1,7 @@
 {
   "name": "cahier-ecriture",
   "productName": "Cahier d'écriture",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Feuilles d'exercices à imprimer pour apprendre à écrire et à calculer : écriture cursive sur réglure Seyès, opérations à trou.",
   "main": "main.js",
   "author": {
@@ -85,7 +85,7 @@
       "gatekeeperAssess": false,
       "artifactName": "Cahier-ecriture-mac.${ext}",
       "extendInfo": {
-        "CFBundleName": "Cahier d'e\u0301criture"
+        "CFBundleName": "Cahier d'écriture"
       }
     },
     "dmg": {
