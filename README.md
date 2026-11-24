@@ -54,3 +54,7 @@ Polices Playwrite FR Trad et Playwrite FR Moderne, © The Playwrite Project Auth
 ## Auteur
 
 Yoann Saunier — [github.com/ysaunier](https://github.com/ysaunier)
+
+Si l'application te rend service, tu peux m'offrir un café :
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ysaunier-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/ysaunier)

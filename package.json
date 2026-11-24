@@ -60,5 +60,9 @@
   "devDependencies": {
     "electron": "^45.4.1",
     "electron-builder": "^26.18.0"
+  },
+  "funding": {
+    "type": "buymeacoffee",
+    "url": "https://buymeacoffee.com/ysaunier"
   }
 }
