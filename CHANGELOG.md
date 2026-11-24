@@ -1,5 +1,11 @@
 # Nouveautés
 
+## 1.1.2 — 2026-11-24
+
+- **macOS** : l'application ne se ferme plus au démarrage.
+- Menu Aide : « Signaler un problème… » ouvre un rapport de bug avec la version et le système déjà remplis ; « Nous écrire… » ouvre un courriel vers contact@ysaunier.dev.
+- Fenêtre « À propos » et aide : adresse de contact et bouton pour signaler un problème.
+
 ## 1.1.1 — 2026-11-24
 
 - Version **macOS** (Intel et Apple Silicon) : menu de l'application, menu Édition, réouverture depuis le Dock.

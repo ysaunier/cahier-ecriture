@@ -76,7 +76,13 @@
       $("help-foot").textContent =
         `${info.name} ${info.version} · ${info.author} · Polices Playwrite (TypeTogether), licence SIL OFL 1.1 · Electron ${info.electron}`;
       document.title = info.name;
+      if (info.email) {
+        $("help-email").textContent = ` : ${info.email}`;
+        $("help-mail").hidden = false;
+      }
     });
+    $("help-bug").addEventListener("click", () => api.open("bug"));
+    $("help-mail").addEventListener("click", () => api.open("contact"));
   }
 
   show(C.store.get("cahier-onglet", C.order[0]));

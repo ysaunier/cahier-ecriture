@@ -1,0 +1,88 @@
+name: Signaler un bug
+description: Quelque chose ne marche pas comme prévu (plantage, feuille mal imprimée, erreur…)
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de prendre le temps de signaler ce problème.
+        Depuis l'application, le menu **Aide › Signaler un problème** remplit déjà la version et le système.
+        N'ajoute pas d'informations personnelles (nom d'enfant, adresse…) : les issues sont publiques.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Que se passe-t-il ?
+      description: Décris le problème en quelques phrases.
+      placeholder: "Ex. : l'application se ferme dès que je l'ouvre."
+    validations:
+      required: true
+
+  - type: textarea
+    id: etapes
+    attributes:
+      label: Comment le reproduire ?
+      description: Les étapes, dans l'ordre. Indique l'onglet (Écriture ou Calcul) et les réglages utilisés.
+      placeholder: |
+        1. Ouvrir l'onglet Calcul
+        2. Cocher « Division »
+        3. Cliquer sur Imprimer
+    validations:
+      required: false
+
+  - type: textarea
+    id: attendu
+    attributes:
+      label: Qu'attendais-tu ?
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: Version de l'application
+      description: Visible dans Aide › À propos.
+      placeholder: "1.1.1"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Système
+      placeholder: "macOS 26.7 (arm64), Windows 11 (x64)…"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: installation
+    attributes:
+      label: Version installée
+      options:
+        - Windows (installation)
+        - Windows (sans installation, portable)
+        - macOS (.dmg)
+        - macOS (.zip)
+        - Lancée depuis le code source (npm start)
+    validations:
+      required: false
+
+  - type: textarea
+    id: rapport
+    attributes:
+      label: Message d'erreur ou rapport de plantage
+      description: |
+        Sous macOS, le rapport s'affiche quand l'app plante (bouton « Rapport… ») ; copie-le en entier, y compris la section « Binary Images ».
+        Sous Windows, recopie le message affiché.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: captures
+    attributes:
+      label: Captures d'écran ou PDF
+      description: Glisse les fichiers ici si cela aide à comprendre.
+    validations:
+      required: false

@@ -63,6 +63,23 @@ jobs:
         run: npx electron-builder ${{ matrix.args }} --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      # Le test de fumée lance Electron non empaqueté : il ne voit pas les problèmes propres
+      # au paquet (noms des helpers, Info.plist, signature). On lance donc la vraie app.
+      - name: L'app empaquetée démarre (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          app=$(find dist -maxdepth 2 -name "*.app" -type d | head -n 1)
+          test -n "$app" || { echo "::error::Aucune .app dans dist"; exit 1; }
+          exe="$app/Contents/MacOS/$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")"
+          "$exe" --enable-logging &
+          pid=$!
+          sleep 20
+          if ! kill -0 "$pid" 2>/dev/null; then
+            code=0; wait "$pid" || code=$?
+            echo "::error::L'app empaquetée s'est arrêtée au démarrage (code $code)"
+            exit 1
+          fi
+          kill "$pid"
       - uses: actions/upload-artifact@v7
         with:
           name: cahier-${{ matrix.name }}

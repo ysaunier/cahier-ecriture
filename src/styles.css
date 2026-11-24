@@ -114,6 +114,7 @@ dialog#help::backdrop { background: rgba(20, 28, 45, .45); }
 .help-body kbd { font: 12px var(--ui); background: var(--bg); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; }
 .help-body table { border-collapse: collapse; }
 .help-body td { padding: 4px 16px 4px 0; }
+.help-links { display: flex; gap: 8px; flex-wrap: wrap; }
 .help-foot { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); margin-top: 20px; padding-top: 12px; }
 
 @media print {
