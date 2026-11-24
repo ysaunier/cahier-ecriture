@@ -59,7 +59,7 @@ NSIS ne lit pas les chemins de plus de 260 caractères : si `npm run dist` écho
 | [Release](.github/workflows/release.yml) | chaque tag `vX.Y.Z` | vérifie que le tag correspond au `package.json`, relance les tests, construit Windows et macOS, publie la Release avec les notes du CHANGELOG |
 | [Dependabot](.github/dependabot.yml) | chaque semaine | propose les mises à jour d'Electron, des outils et des actions |
 
-Lancé à la main depuis l'onglet Actions, le workflow Release construit seulement les fichiers (téléchargeables dans le résumé du run), sans rien publier. Un tag avec un tiret (`v1.2.0-beta.1`) publie une préversion.
+Lancé à la main depuis l'onglet Actions, le workflow Release construit seulement les fichiers (téléchargeables dans le résumé du run), sans rien publier. Avec un tag existant dans le champ « tag » (ex. `v1.2.0`), il construit ce tag et publie la Release, ou la complète si elle a été créée depuis l'interface web de GitHub. Un tag avec un tiret (`v1.2.0-beta.1`) publie une préversion.
 
 ### Publier une version
 
