@@ -50,16 +50,56 @@ app.whenReady().then(async () => {
     check("écriture : saisie avec majuscules bâton", await waitFor(win,
       `getComputedStyle(document.getElementById("e-txt")).fontFamily.includes("Cahier Majuscules")`));
 
+    // Trottoirs québécois : pointillé, plein, plein, pointillé ; plus de réglure Seyès
+    check("panneau : rappel du papier et de la réglure", await js(`document.querySelector("#e-panel .pageinfo-text").textContent.includes("Seyès")`));
+    await js(`document.querySelector("#e-panel .pageinfo-edit").click()`);
+    check("préférences : s'ouvrent depuis le panneau", await js(`document.getElementById("prefs").open`));
+    await js(`document.getElementById("p-ruling-trottoir").click(); document.getElementById("prefs").close()`);
+    check("écriture : trottoirs québécois", await waitFor(win,
+      `document.querySelectorAll("#e-pages .page line[stroke-dasharray]").length > 0 && !document.querySelector('#e-pages .page line[stroke="#8f9fd6"]')`));
+    const pattern = await js(`[...document.querySelectorAll("#e-pages .page:first-child line")].slice(0, 4).map(l => l.hasAttribute("stroke-dasharray") ? "." : "-").join("")`);
+    check("écriture : ordre pointillé, plein, plein, pointillé", pattern === ".--.", pattern);
+
+    // Les réglages survivent à un rechargement de la fenêtre
+    await js(`document.getElementById("e-txt").value = "Bonjour"; document.getElementById("e-txt").dispatchEvent(new Event("input"))`);
+    await wait(600);
+    await win.webContents.reload();
+    await waitFor(win, `document.querySelectorAll("#e-pages .page").length > 0`);
+    const kept = await js(`[document.getElementById("e-txt").value, document.querySelector("#e-panel .pageinfo-text").textContent.includes("Trottoirs")].join("|")`);
+    check("réglages retrouvés après réouverture", kept === "Bonjour|true", kept);
+
     await js(`document.getElementById("tab-calcul").click()`);
     check("calcul : onglet affiché", await js(`!document.getElementById("ex-calcul").hidden`));
     check("calcul : feuille + corrigé", await waitFor(win, `document.querySelectorAll("#c-pages .page").length >= 2`));
     const boxes = await js(`document.querySelectorAll("#c-pages .page:first-child rect").length`);
     check("calcul : 20 cases sur la première feuille", boxes === 20, `${boxes} cases`);
+    const widths = await js(`[...new Set([...document.querySelectorAll("#c-pages rect")].map(r => r.getAttribute("width")))]`);
+    check("calcul : toutes les cases ont la même largeur", widths.length === 1, widths.join(", "));
 
     await js(`document.getElementById("c-add").click(); document.getElementById("c-sub").click();`);
     check("calcul : message si aucune opération", await waitFor(win, `document.querySelector("#c-pages .empty")`));
     await js(`document.getElementById("c-add").click(); document.getElementById("c-sub").click();`);
     check("calcul : feuille régénérée", await waitFor(win, `document.querySelectorAll("#c-pages .page rect").length >= 20`));
+
+    check("calcul : fond blanc par défaut, même avec les trottoirs", await waitFor(win,
+      `document.querySelector("#c-pages .page") && document.querySelectorAll("#c-pages .page:first-child line[stroke-dasharray]").length === 0 && document.getElementById("c-ruling").value === "none"`));
+    await js(`document.getElementById("c-layout-column").click()`);
+    check("calcul : opérations posées en colonnes", await waitFor(win,
+      `document.querySelectorAll('#c-pages .page:first-child line[stroke="#1b2a55"]').length >= 4`));
+    const colWidths = await js(`[...new Set([...document.querySelectorAll("#c-pages rect")].map(r => r.getAttribute("width")))]`);
+    check("calcul en colonnes : cases de même largeur", colWidths.length === 1, colWidths.join(", "));
+
+    await js(`document.getElementById("btn-prefs").click()`);
+    check("préférences : bouton ⚙", await js(`document.getElementById("prefs").open`));
+    await js(`const s = document.getElementById("p-paper"); s.value = "a4"; s.dispatchEvent(new Event("change"))`);
+    check("préférences : A4 appliqué aux deux onglets", await waitFor(win,
+      `[...document.querySelectorAll("#e-pages .page, #c-pages .page")].every(p => p.style.height === "297mm")`));
+    const before = await js(`document.querySelectorAll("#e-pages text, #c-pages text").length`);
+    await js(`document.getElementById("p-header").click()`);
+    check("préférences : « Prénom / Date » retiré des deux onglets", await waitFor(win,
+      `![...document.querySelectorAll("#e-pages text, #c-pages text")].some(t => t.textContent.startsWith("Prénom"))`), `${before} textes avant`);
+    await js(`document.getElementById("p-header").click()`);
+    await js(`document.getElementById("prefs").close()`);
 
     await js(`document.getElementById("btn-help").click()`);
     check("aide : s'ouvre", await js(`document.getElementById("help").open`));

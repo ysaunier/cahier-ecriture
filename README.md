@@ -8,6 +8,11 @@ Application Windows et macOS (Electron) qui prépare des feuilles d'exercices à
 | Écriture | Calcul |
 | --- | --- |
 | ![Exercice d'écriture : modèle, trait plein à repasser, tirets, sur réglure Seyès](docs/screenshots/ecriture.png) | ![Exercice de calcul : additions à compléter sur petits carreaux](docs/screenshots/calcul.png) |
+| ![Écriture sur trottoirs québécois : pointillé, deux lignes pleines, pointillé](docs/screenshots/ecriture-trottoirs.png) | ![Additions posées en colonnes, cases de même largeur](docs/screenshots/calcul-colonnes.png) |
+
+Les **Préférences** (⚙) règlent le papier, la réglure des feuilles d'écriture et l'en-tête « Prénom / Date » pour tous les onglets, et permettent d'exporter ou d'importer ses réglages :
+
+<img src="docs/screenshots/preferences.png" alt="Fenêtre Préférences : format du papier, réglure, en-tête, sauvegarde des réglages" width="380">
 
 ## Télécharger
 
@@ -30,8 +35,8 @@ L'application n'est pas signée. Sous Windows, SmartScreen demande une confirmat
 
 | Onglet | Ce que fait la feuille |
 | --- | --- |
-| **Écriture** | Un mot par bloc : ligne modèle, trait plein gris à repasser, tirets qui suivent le chemin du crayon, lignes sans aide. Réglure Seyès, cursive scolaire liée, majuscules en lettres bâton. |
-| **Calcul** | Opérations à trou (résultat ou terme manquant), case ou ligne, petits carreaux ou Seyès, corrigé sur une page à part. |
+| **Écriture** | Un mot par bloc : ligne modèle, trait plein gris à repasser, tirets qui suivent le chemin du crayon, lignes sans aide. Réglure Seyès (France) ou trottoirs (Québec), cursive scolaire liée, majuscules en lettres bâton. |
+| **Calcul** | Opérations à trou (résultat ou terme manquant), en ligne ou posées en colonnes, case ou ligne, petits carreaux ou Seyès, corrigé sur une page à part. |
 
 ## Développer
 
@@ -95,7 +100,7 @@ build/                 icône et écran de démarrage
 
 ### Ajouter un exercice
 
-1. Créer `src/exercises/mon-exercice.js` qui appelle `Cahier.register({ id, label, paperKey, init, render })`. Mettre la logique sans interface dans `src/lib/` pour pouvoir la tester comme `math-gen.js`.
+1. Créer `src/exercises/mon-exercice.js` qui appelle `Cahier.register({ id, label, init, render })`. Le papier et la réglure communs sont dans `Cahier.prefs`. Mettre la logique sans interface dans `src/lib/` pour pouvoir la tester comme `math-gen.js`.
 2. Ajouter dans `src/index.html` un bouton d'onglet `tab-<id>` et une section `ex-<id>` (panneau `aside` + `main.pages`), puis la balise `<script>`.
 3. Ajouter l'entrée dans `EXERCISES` de `main.js` pour le menu et son raccourci.
 4. Ajouter des tests dans `test/unit/` et une vérification dans `test/smoke/smoke.js`.

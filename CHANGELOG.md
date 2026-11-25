@@ -1,5 +1,14 @@
 # Nouveautés
 
+## Prochaine version
+
+- Préférences (⚙, Ctrl+, ou « Modifier » en haut de chaque panneau) : format du papier et « Prénom / Date » pour tous les onglets, réglure des feuilles d'écriture.
+- Écriture : nouvelle réglure en trottoirs québécois (pointillé, deux lignes pleines, pointillé), en plus de Seyès, petits carreaux et blanc.
+- Calcul : fond blanc par défaut (petits carreaux et Seyès restent au choix).
+- Calcul : opérations posées en colonnes, en plus de la disposition en ligne.
+- Export et import des réglages dans un fichier, retour aux réglages d'origine. La fenêtre retrouve sa taille et sa position.
+- Aide : « Proposer une idée » ouvre un modèle de suggestion sur GitHub.
+
 ## 1.1.2 — 2026-11-24
 
 - **macOS** : l'application ne se ferme plus au démarrage.

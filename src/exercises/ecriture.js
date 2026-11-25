@@ -3,10 +3,13 @@
   const { $, el } = C;
   const P = "e-";
   const STORE_KEY = "cahier-ecriture";
-  const FIELDS = ["txt", "font", "customFont", "dotFont", "paper", "size", "nGray", "nDot", "nEmpty", "adj", "bold", "caps", "repeat", "skip", "header"];
+  const FIELDS = ["txt", "font", "customFont", "dotFont", "size", "tsize", "nGray", "nDot", "nEmpty", "adj", "bold", "caps", "repeat", "skip"];
   const CAPS = "Playwrite FR Moderne"; // ses majuscules sont en lettres bâton, même trait que la cursive
   const CAPS_RANGE = "U+0041-005A, U+00C0-00D6, U+00D8-00DE, U+0152, U+0178"; // A-Z et majuscules accentuées
-  const MARGIN_X = 25, TEXT_X = 28, TOP = 14;
+  const MARGIN_X = 25, TOP = 14;
+  const TEXT_X = { seyes: 28, grid: 28, none: 22, trottoir: 17 };
+  const GRID_CELL = 5; // petits carreaux : le « x » fait un carreau
+  const TROTTOIR_X = 12; // les trottoirs vont de 12 mm du bord gauche à 12 mm du bord droit
   const BOLD_LABELS = ["fin", "normal", "gras", "très gras", "feutre"];
 
   function settings() {
@@ -16,8 +19,11 @@
       family: custom ? ($(P + "customFont").value.trim() || "Ecolier") : $(P + "font").value,
       variable: !custom, // les Playwrite sont variables (100 à 400)
       dotFamily: custom ? $(P + "dotFont").value.trim() : "",
-      paper: $(P + "paper").value,
-      interval: +$(P + "size").value,
+      paper: C.prefs.paper,
+      ruling: C.prefs.ruling,
+      // Hauteur du « x » : interligne Seyès, bande du trottoir, ou un petit carreau
+      interval: C.prefs.ruling === "trottoir" ? +$(P + "tsize").value
+        : C.prefs.ruling === "grid" ? GRID_CELL : +$(P + "size").value,
       nGray: Math.max(0, +$(P + "nGray").value || 0),
       nDot: Math.max(0, +$(P + "nDot").value || 0),
       nEmpty: Math.max(0, +$(P + "nEmpty").value || 0),
@@ -26,7 +32,7 @@
       caps: $(P + "caps").checked,
       repeat: $(P + "repeat").checked,
       skip: $(P + "skip").checked,
-      header: $(P + "header").checked,
+      header: C.prefs.header,
     };
   }
 
@@ -59,6 +65,9 @@
     $(P + "adjVal").textContent = Math.round(c.adj * 100) + " %";
     $(P + "boldVal").textContent = BOLD_LABELS[c.bold];
     $(P + "customBox").hidden = $(P + "font").value !== "__custom";
+    $(P + "seyesBox").hidden = c.ruling !== "seyes" && c.ruling !== "none";
+    $(P + "trottoirBox").hidden = c.ruling !== "trottoir";
+    const X0 = TEXT_X[c.ruling];
 
     const wNormal = c.variable ? 400 : "normal";
     const thick = c.bold === 0 ? 0 : c.interval * 0.045 * c.bold; // contour de la même couleur = trait plus épais
@@ -75,8 +84,10 @@
     // Majuscules bâton : même hauteur que le « l » cursif
     const capR = (C.measure("E", CAPS, 400).actualBoundingBoxAscent / 100) || 0.7;
     const lR = (C.measure("l", c.family, wNormal).actualBoundingBoxAscent / 100) || 3 * xr;
-    const capFs = fs * lR / capR;
+    // Seyès : majuscules à la hauteur du « l » ; trottoir : jusqu'au pointillé du haut (2 bandes)
+    const capFs = fs * (c.ruling === "trottoir" ? 2 * xr : lR) / capR;
     syncTextarea(c, capFs / fs);
+
 
     const CAP_GAP = c.interval * 0.35; // petit espace après une majuscule bâton (non liée)
     const runs = s => c.caps
@@ -114,27 +125,46 @@
     };
 
     const paper = C.paper.get(c.paper);
-    const textEnd = paper.w - 10, bottom = paper.h - 10;
-    const big = c.interval * 4;
-    const pitch = big * (c.skip ? 2 : 1);
-    const firstBase = TOP + big * (c.header ? 2 : 1);
-    const rowsPerPage = Math.floor((bottom - 2 * c.interval - firstBase) / pitch) + 1;
+    const bottom = paper.h - 10;
+    const b = c.interval;
+    let textEnd, pitch, firstBase, rowsPerPage;
+    if (c.ruling !== "trottoir") {
+      // Seyès, petits carreaux ou blanc : une rangée tous les 4 « x »
+      const big = b * 4;
+      textEnd = paper.w - 10;
+      pitch = big * (c.skip ? 2 : 1);
+      firstBase = TOP + big * (c.header ? 2 : 1);
+      rowsPerPage = Math.floor((bottom - 2 * b - firstBase) / pitch) + 1;
+    } else {
+      // Trottoir québécois : pointillé, plein, plein, pointillé, à intervalles égaux.
+      // La ligne de base est la 2e ligne pleine ; le « x » remplit la bande du milieu.
+      textEnd = paper.w - TROTTOIR_X - 3;
+      pitch = b * 3 + b * (c.skip ? 3 : 2);
+      firstBase = TOP + (c.header ? 10 : 0) + b * 3;
+      rowsPerPage = Math.floor((bottom - b * 1.5 - firstBase) / pitch) + 1;
+    }
 
     const lineText = t => {
       if (!c.repeat) return t;
       const sep = "  ";
       let s = t;
-      while (widthMM(s + sep + t) <= textEnd - TEXT_X) s += sep + t;
+      while (widthMM(s + sep + t) <= textEnd - X0) s += sep + t;
       return s;
     };
 
     const out = $(P + "pages");
     out.innerHTML = "";
     let page = null, row = rowsPerPage;
+    const placeText = (attrs, s, y) => fillText(el("text", { ...attrs, x: X0, y }, page.svg), s);
     const addPage = () => {
-      page = C.paper.newPage(out, c.paper, { ruling: "seyes", interval: c.interval, top: TOP, marginX: MARGIN_X });
+      page = C.paper.newPage(out, c.paper, {
+        ruling: c.ruling === "trottoir" ? "none" : c.ruling, interval: b, cell: GRID_CELL, top: TOP, marginX: MARGIN_X,
+      });
       row = 0;
-      if (c.header) C.paper.header(page.svg, TEXT_X, TOP + big - c.interval);
+      if (c.header) C.paper.header(page.svg, X0, c.ruling === "trottoir" ? TOP + 4 : TOP + b * 3);
+      if (c.ruling === "trottoir") {
+        for (let r = 0; r < rowsPerPage; r++) C.paper.trottoir(page.svg, firstBase + r * pitch, b, TROTTOIR_X, paper.w - TROTTOIR_X);
+      }
     };
 
     const blocks = c.phrases.length ? c.phrases : [""];
@@ -149,19 +179,19 @@
         row++;
         if (kind === "empty" || !t) continue;
         const base = {
-          x: TEXT_X, y, "font-size": fs, "font-family": `"${c.family}", cursive`,
+          "font-size": fs, "font-family": `"${c.family}", cursive`,
           style: "font-feature-settings:'calt' 1, 'liga' 1; font-kerning: normal",
         };
         const solid = color => ({ ...base, "font-weight": c.bold === 0 ? 250 : wNormal, fill: color, stroke: color, "stroke-width": thick, "stroke-linejoin": "round" });
         if (kind === "model") {
-          fillText(el("text", solid("#111"), page.svg), txt);
+          placeText(solid("#111"), txt, y);
         } else if (kind === "gray") {
-          fillText(el("text", solid("#b9bfcc"), page.svg), txt);
+          placeText(solid("#b9bfcc"), txt, y);
         } else if (c.dotFamily) {
-          fillText(el("text", { ...base, "font-family": `"${c.dotFamily}", cursive`, fill: "#6b7284" }, page.svg), txt);
+          placeText({ ...base, "font-family": `"${c.dotFamily}", cursive`, fill: "#6b7284" }, txt, y);
         } else {
           const d = dashesFor(txt).map(l => l.map(([px, py], i) =>
-            `${i ? "L" : "M"}${(TEXT_X + px).toFixed(2)} ${(y + py).toFixed(2)}`).join("")).join("");
+            `${i ? "L" : "M"}${(X0 + px).toFixed(2)} ${(y + py).toFixed(2)}`).join("")).join("");
           el("path", { d, fill: "none", stroke: "#4a5162", "stroke-linecap": "round", "stroke-linejoin": "round",
             "stroke-width": Math.max(0.25, c.interval * 0.09) }, page.svg);
         }
@@ -172,9 +202,7 @@
   C.register({
     id: "ecriture",
     label: "Écriture",
-    paperKey: () => $(P + "paper").value,
     init() {
-      C.paper.fillSelect($(P + "paper"));
       C.store.load(STORE_KEY, FIELDS, P);
       C.bindPanel($(P + "panel"), () => { C.store.save(STORE_KEY, FIELDS, P); render(); });
       return render();
