@@ -53,6 +53,7 @@
     $("p-paper").value = C.prefs.paper;
     $("p-ruling-" + C.prefs.ruling).checked = true;
     $("p-header").checked = C.prefs.header;
+    $("p-updates").checked = C.prefs.updates;
     document.querySelectorAll(".pageinfo-text").forEach(e => (e.textContent = C.prefs.summary(!e.closest("#c-panel"))));
   }
   function openPrefs() {
@@ -63,6 +64,28 @@
   document.querySelectorAll('input[name="p-ruling"]').forEach(r =>
     r.addEventListener("change", () => { if (r.checked) C.prefs.set("ruling", r.value); }));
   $("p-header").addEventListener("change", () => C.prefs.set("header", $("p-header").checked));
+  $("p-updates").addEventListener("change", () => C.prefs.set("updates", $("p-updates").checked));
+
+  /* ---- Nouvelle version disponible ----
+     manual : demandé par l'utilisateur (menu ou bouton), on répond toujours quelque chose. */
+  const IGNORE_KEY = "cahier-maj-ignoree";
+  async function checkUpdate(manual) {
+    if (!api) return;
+    const r = await api.checkUpdate();
+    if (!r.ok) { if (manual) C.toast(`Impossible de vérifier les mises à jour : ${r.error}.`); return; }
+    if (!r.newer) { if (manual) C.toast(`Tu as déjà la dernière version (${r.current}).`); return; }
+    if (!manual && C.store.get(IGNORE_KEY, "") === r.latest) return; // « Plus tard » pour cette version
+    $("update-text").textContent = `La version ${r.latest} est disponible (tu as la ${r.current}).`;
+    $("update").dataset.version = r.latest;
+    $("update").hidden = false;
+  }
+  $("update-get").addEventListener("click", () => api && api.open("release"));
+  $("update-later").addEventListener("click", () => {
+    C.store.set(IGNORE_KEY, $("update").dataset.version || "");
+    $("update").hidden = true;
+  });
+  $("p-check").addEventListener("click", () => checkUpdate(true));
+  if (!api) $("p-check").hidden = true;
   document.querySelectorAll(".pageinfo-edit").forEach(b => b.addEventListener("click", openPrefs));
   C.prefs.onChange(() => {
     syncPrefs();
@@ -131,6 +154,7 @@
       else if (cmd === "pdf") doPdf();
       else if (cmd === "help") openHelp("help-start");
       else if (cmd === "prefs") openPrefs();
+      else if (cmd === "update") checkUpdate(true);
       else if (cmd === "news") openHelp("help-news");
       else if (cmd.startsWith("tab:")) show(cmd.slice(4));
     });
@@ -148,6 +172,9 @@
     $("help-idea").addEventListener("click", () => api.open("idea"));
     $("help-mail").addEventListener("click", () => api.open("contact"));
   }
+
+  // Vérification discrète, quelques secondes après l'ouverture
+  if (api && C.prefs.updates) setTimeout(() => checkUpdate(false), 3000);
 
   show(C.store.get("cahier-onglet", C.order[0]));
   document.fonts.ready.then(() => Promise.all(C.order.map(id => C.exercises[id].init())));

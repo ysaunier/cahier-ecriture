@@ -1,5 +1,10 @@
 # Nouveautés
 
+## 1.2.1 — 2026-11-25
+
+- **Mises à jour** : au démarrage, un bandeau prévient quand une nouvelle version est disponible, avec un bouton pour la télécharger. Vérification à la main dans le menu Aide › « Rechercher une mise à jour… » ; désactivable dans les Préférences.
+- **Licence MIT** : l'application est libre et gratuite, utilisable, modifiable et partageable, y compris en classe. Mention ajoutée dans « À propos » et dans l'aide.
+
 ## 1.2.0 — 2026-11-25
 
 - Préférences (⚙, Ctrl+, ou « Modifier » en haut de chaque panneau) : format du papier et « Prénom / Date » pour tous les onglets, réglure des feuilles d'écriture.

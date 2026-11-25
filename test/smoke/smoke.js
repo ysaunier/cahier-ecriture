@@ -28,6 +28,8 @@ async function waitFor(win, expr, timeout = 15000) {
   return false;
 }
 
+// Une « nouvelle version » factice, pour vérifier le bandeau sans appeler GitHub
+ipcMain.handle("cahier:checkUpdate", () => ({ ok: true, current: pkg.version, latest: "99.0.0", newer: true }));
 ipcMain.handle("cahier:info", () => ({ name: pkg.productName, version: pkg.version, author: pkg.author.name, email: pkg.bugs.email, electron: process.versions.electron }));
 
 app.whenReady().then(async () => {
@@ -45,6 +47,10 @@ app.whenReady().then(async () => {
     check("polices intégrées chargées", await waitFor(win,
       `document.fonts.check('400 20px "Playwrite FR Trad"') && document.fonts.check('400 20px "Playwrite FR Moderne"')`));
 
+    check("mise à jour : bandeau affiché", await waitFor(win,
+      `!document.getElementById("update").hidden && document.getElementById("update-text").textContent.includes("99.0.0")`));
+    await js(`document.getElementById("update-later").click()`);
+    check("mise à jour : « Plus tard » masque le bandeau", await js(`document.getElementById("update").hidden`));
     check("écriture : feuilles générées", await waitFor(win, `document.querySelectorAll("#e-pages .page").length > 0`));
     check("écriture : tirets tracés", await waitFor(win, `document.querySelectorAll("#e-pages .page path").length > 0`));
     check("écriture : saisie avec majuscules bâton", await waitFor(win,

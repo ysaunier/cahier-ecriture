@@ -137,6 +137,7 @@ function buildMenu() {
       submenu: [
         { label: "Aide", accelerator: "F1", click: () => send("help") },
         { label: "Nouveautés", click: () => send("news") },
+        { label: "Rechercher une mise à jour…", click: () => send("update") },
         { type: "separator" },
         { label: "Signaler un problème…", click: () => openSupport("bug") },
         { label: "Proposer une idée…", click: () => openSupport("idea") },
@@ -211,6 +212,26 @@ ipcMain.handle("cahier:info", () => ({
   email: EMAIL,
   electron: process.versions.electron,
 }));
+
+/* ---- Nouvelle version disponible ? ----
+   Une seule requête vers l'API publique de GitHub, sans aucune donnée personnelle.
+   Rien n'est téléchargé : la fenêtre propose seulement d'ouvrir la page de la Release. */
+ipcMain.handle("cahier:checkUpdate", async () => {
+  const url = support.latestReleaseApi(pkg);
+  if (!url) return { ok: false, error: "adresse du projet inconnue" };
+  try {
+    const res = await fetch(url, {
+      headers: { Accept: "application/vnd.github+json", "User-Agent": "cahier-ecriture" },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return { ok: false, error: `GitHub a répondu ${res.status}` };
+    const latest = String((await res.json()).tag_name || "").replace(/^v/, "");
+    const current = app.getVersion();
+    return { ok: true, current, latest, newer: support.isNewer(latest, current) };
+  } catch (err) {
+    return { ok: false, error: err.name === "TimeoutError" ? "pas de réponse de GitHub" : String(err.message || err) };
+  }
+});
 
 // La fenêtre ne passe qu'un nom de lien ; l'URL est choisie ici (liste fermée)
 ipcMain.handle("cahier:open", (_e, name) => openSupport(String(name)));
