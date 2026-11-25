@@ -120,7 +120,7 @@ dialog#help::backdrop, dialog#prefs::backdrop { background: rgba(20, 28, 45, .45
 
 @media print {
   body { background: #fff; display: block; overflow: visible; height: auto; }
-  .topbar, aside, .toast, dialog { display: none !important; }
+  .topbar, .update, aside, .toast, dialog { display: none !important; }
   .exercise { display: block; }
   .exercise[hidden] { display: none !important; }
   .pages { padding: 0; gap: 0; display: block; overflow: visible; }
@@ -144,3 +144,9 @@ dialog#prefs .ruling-list label { max-width: none; flex-direction: row; align-it
 dialog#prefs label.check { flex-direction: row; align-items: center; font-weight: 400; max-width: none; margin-top: 14px; }
 .field-title { font-weight: 600; font-size: 13px; margin: 14px 0 0; }
 .ruling-list + .hint { margin-top: 8px; }
+
+/* ---------- Bandeau « nouvelle version » ---------- */
+.update { display: flex; align-items: center; gap: 12px; padding: 8px 24px; background: #e8f5e9; border-bottom: 1px solid #b7dfbb; color: #1e4620; font-size: 13px; }
+.update span { flex: 1; font-weight: 600; }
+.update button { padding: 5px 14px; font-size: 12px; }
+.update[hidden] { display: none !important; }

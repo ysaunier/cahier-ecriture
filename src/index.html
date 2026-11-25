@@ -23,6 +23,12 @@
   </div>
 </header>
 
+<div id="update" class="update" role="status" hidden>
+  <span id="update-text"></span>
+  <button id="update-get" class="primary" type="button">Télécharger</button>
+  <button id="update-later" class="ghost" type="button">Plus tard</button>
+</div>
+
 <!-- ================= Écriture ================= -->
 <section class="exercise" id="ex-ecriture" role="tabpanel" aria-labelledby="tab-ecriture">
   <aside id="e-panel">
@@ -189,6 +195,10 @@ Maman</textarea>
     <p class="hint">La feuille de calcul a son propre fond (blanc, petits carreaux ou Seyès), dans son panneau.</p>
     <label class="check" for="p-header"><input id="p-header" type="checkbox"> « Prénom / Date » en haut de chaque page</label>
 
+    <h3>Mises à jour</h3>
+    <label class="check" for="p-updates"><input id="p-updates" type="checkbox"> Me prévenir au démarrage quand une nouvelle version est disponible</label>
+    <p class="help-links"><button class="ghost" id="p-check" type="button">Rechercher maintenant</button></p>
+
     <h3>Sauvegarde des réglages</h3>
     <p>Pour retrouver tes réglages sur un autre ordinateur, ou les partager avec une collègue.</p>
     <p class="help-links">
@@ -237,6 +247,9 @@ Maman</textarea>
     <h3>Préférences</h3>
     <p>Le bouton <b>⚙</b> (ou <kbd>Ctrl</kbd> + <kbd>,</kbd>, ou « Modifier » en haut de chaque panneau) choisit le format du papier et l'en-tête « Prénom / Date » de tous les exercices, ainsi que la réglure des feuilles d'écriture, exporte ou importe tes réglages dans un fichier (pour un autre ordinateur ou une collègue), et rétablit les réglages d'origine.</p>
 
+    <h3>Mises à jour</h3>
+    <p>Au démarrage, l'application regarde sur GitHub si une nouvelle version est sortie et affiche un bandeau en haut de la fenêtre. <b>Télécharger</b> ouvre la page de la nouvelle version : il suffit d'installer le fichier par-dessus (ou de remplacer la version portable). Tu peux aussi vérifier à la main (menu <b>Aide › Rechercher une mise à jour…</b>) ou désactiver la vérification dans les Préférences.</p>
+
     <h3>Imprimer</h3>
     <p>Le bouton <b>Imprimer</b> envoie uniquement l'onglet affiché, au format choisi (US Letter ou A4), sans marges et à 100 %. Si ton imprimante propose « Ajuster à la page », laisse-le désactivé pour garder les vraies dimensions de la réglure. Le bouton <b>PDF</b> enregistre la feuille et l'ouvre.</p>
 
@@ -259,6 +272,7 @@ Maman</textarea>
     </p>
 
     <h3 id="help-news">Nouveautés</h3>
+    <p><b>1.2.1</b> — Bandeau quand une nouvelle version est disponible (et Aide › « Rechercher une mise à jour… »), licence MIT.</p>
     <p><b>1.2.0</b> — Trottoirs québécois pour l'écriture, calculs posés en colonnes avec des cases de même largeur, fenêtre Préférences (papier, réglure, « Prénom / Date », export et import des réglages), « Proposer une idée » dans le menu Aide.</p>
     <p><b>1.1.2</b> — Correction du plantage au démarrage sur macOS, signalement de problème et adresse de contact dans le menu Aide.</p>
     <p><b>1.1.1</b> — Version macOS, liens vers la page du projet dans le menu Aide, nouveau texte d'exemple.</p>

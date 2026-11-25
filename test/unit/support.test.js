@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const pkg = require("../../package.json");
-const { describeSystem, bugReportUrl, suggestionUrl, contactUrl, supportLink } = require("../../support.js");
+const { describeSystem, bugReportUrl, suggestionUrl, contactUrl, supportLink, latestReleaseApi, isNewer } = require("../../support.js");
 
 const env = { platform: "darwin", systemVersion: "26.7.3", arch: "arm64", electron: "45.4.1" };
 const template = fs.readFileSync(path.join(__dirname, "..", "..", ".github", "ISSUE_TEMPLATE", "bug.yml"), "utf8");
@@ -38,6 +38,23 @@ test("suggestion : pointe vers le modèle d'idée et remplit des champs qui exis
     if (key !== "template") assert.ok(ids.includes(key), `le champ « ${key} » n'existe pas dans suggestion.yml`);
   }
   assert.equal(supportLink("idea", pkg, env), suggestionUrl(pkg));
+});
+
+test("mise à jour : comparaison des versions", () => {
+  assert.equal(isNewer("1.2.1", "1.2.0"), true);
+  assert.equal(isNewer("v1.10.0", "1.9.9"), true, "1.10 est plus récent que 1.9 (pas un tri alphabétique)");
+  assert.equal(isNewer("2.0.0", "1.99.99"), true);
+  assert.equal(isNewer("1.2.0", "1.2.0"), false);
+  assert.equal(isNewer("1.1.9", "1.2.0"), false);
+  assert.equal(isNewer("1.2.0", "1.2.0-beta.1"), true, "la version finale passe devant la préversion");
+  assert.equal(isNewer("1.2.0-beta.1", "1.2.0"), false);
+  assert.equal(isNewer("", "1.2.0"), false);
+  assert.equal(isNewer("pas-une-version", "1.2.0"), false);
+});
+
+test("mise à jour : API GitHub et page de la Release", () => {
+  assert.equal(latestReleaseApi(pkg), "https://api.github.com/repos/ysaunier/cahier-ecriture/releases/latest");
+  assert.equal(supportLink("release", pkg, env), `${pkg.homepage}/releases/latest`);
 });
 
 test("contact : mailto vers contact@, objet encodé avec %20", () => {

@@ -152,20 +152,22 @@
     paper: "letter",
     ruling: "seyes",
     header: true,
+    updates: true, // vérifier au démarrage si une nouvelle version est disponible
     load() {
       let saved = {};
       try { saved = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}"); } catch (e) {}
       C.prefs.paper = PAPERS[saved.paper] ? saved.paper : "letter";
       C.prefs.ruling = RULINGS[saved.ruling] ? saved.ruling : "seyes";
       C.prefs.header = saved.header !== false;
+      C.prefs.updates = saved.updates !== false;
     },
     /** Change une préférence, l'enregistre et redessine tous les exercices. */
     set(key, value) {
       if (key === "paper" && !PAPERS[value]) return;
       if (key === "ruling" && !RULINGS[value]) return;
-      if (key === "header") value = Boolean(value);
+      if (key === "header" || key === "updates") value = Boolean(value);
       C.prefs[key] = value;
-      C.store.set(PREFS_KEY, JSON.stringify({ paper: C.prefs.paper, ruling: C.prefs.ruling, header: C.prefs.header }));
+      C.store.set(PREFS_KEY, JSON.stringify({ paper: C.prefs.paper, ruling: C.prefs.ruling, header: C.prefs.header, updates: C.prefs.updates }));
       listeners.forEach(fn => fn());
     },
     onChange(fn) { listeners.push(fn); },

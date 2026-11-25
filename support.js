@@ -39,13 +39,42 @@ function contactUrl(pkg, env) {
   return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
+/** « ysaunier/cahier-ecriture », tiré de la page du projet sur GitHub. */
+function repoSlug(pkg) {
+  const m = String(pkg.homepage || "").match(/^https:\/\/github\.com\/([\w.-]+\/[\w.-]+?)(?:\.git)?\/?$/);
+  return m ? m[1] : null;
+}
+
+/** API GitHub de la dernière Release publiée (les préversions en sont exclues). */
+function latestReleaseApi(pkg) {
+  const slug = repoSlug(pkg);
+  return slug ? `https://api.github.com/repos/${slug}/releases/latest` : null;
+}
+
+function parseVersion(v) {
+  const m = String(v || "").trim().replace(/^v/, "").match(/^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/);
+  return m ? { n: [+m[1], +m[2], +m[3]], pre: m[4] || null } : null;
+}
+
+/** Vrai si « latest » est une version plus récente que « current » (1.10.0 > 1.9.9, 1.2.0 > 1.2.0-beta.1). */
+function isNewer(latest, current) {
+  const a = parseVersion(latest), b = parseVersion(current);
+  if (!a || !b) return false;
+  for (let i = 0; i < 3; i++) if (a.n[i] !== b.n[i]) return a.n[i] > b.n[i];
+  return !a.pre && Boolean(b.pre);
+}
+
 /** Lien autorisé pour un nom donné, ou null si le nom est inconnu. */
 function supportLink(name, pkg, env) {
   if (name === "bug") return bugReportUrl(pkg, env);
   if (name === "idea") return suggestionUrl(pkg);
   if (name === "contact") return contactUrl(pkg, env);
   if (name === "home") return pkg.homepage;
+  if (name === "release") return `${pkg.homepage}/releases/latest`;
   return null;
 }
 
-module.exports = { describeSystem, bugReportUrl, suggestionUrl, contactEmail, contactUrl, supportLink };
+module.exports = {
+  describeSystem, bugReportUrl, suggestionUrl, contactEmail, contactUrl, supportLink,
+  repoSlug, latestReleaseApi, parseVersion, isNewer,
+};
