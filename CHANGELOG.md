@@ -1,6 +1,6 @@
 # Nouveautés
 
-## Prochaine version
+## 1.2.0 — 2026-11-25
 
 - Préférences (⚙, Ctrl+, ou « Modifier » en haut de chaque panneau) : format du papier et « Prénom / Date » pour tous les onglets, réglure des feuilles d'écriture.
 - Écriture : nouvelle réglure en trottoirs québécois (pointillé, deux lignes pleines, pointillé), en plus de Seyès, petits carreaux et blanc.
