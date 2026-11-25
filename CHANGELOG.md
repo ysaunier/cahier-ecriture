@@ -1,5 +1,11 @@
 # Nouveautés
 
+## Prochaine version
+
+- **Confidentialité** : nouvelle section dans l'aide et page `PRIVACY.md` (aucun renseignement personnel recueilli ; seule connexion : la vérification des mises à jour).
+- **Conditions d'utilisation** : logiciel fourni « tel quel », sans garantie ; dans l'aide, la fenêtre « À propos », le menu Aide et `CONDITIONS.md`.
+- Documents du projet : `SECURITY.md`, `CONTRIBUTING.md` (le guide développeur quitte le README), `CODE_OF_CONDUCT.md`.
+
 ## 1.2.1 — 2026-11-25
 
 - **Mises à jour** : au démarrage, un bandeau prévient quand une nouvelle version est disponible, avec un bouton pour la télécharger. Vérification à la main dans le menu Aide › « Rechercher une mise à jour… » ; désactivable dans les Préférences.

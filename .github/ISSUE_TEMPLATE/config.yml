@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Signaler une faille de sécurité
+    url: https://github.com/ysaunier/cahier-ecriture/blob/main/SECURITY.md
+    about: En privé, jamais dans une issue publique.
+  - name: Question ou autre demande
+    url: https://github.com/ysaunier/cahier-ecriture/blob/main/README.md#un-problème-une-question-
+    about: Courriel de contact et autres liens utiles.
