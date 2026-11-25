@@ -48,6 +48,7 @@ function showAbout() {
     detail: [
       `Version ${app.getVersion()}`,
       `Auteur : ${AUTHOR}`,
+      "Logiciel libre et gratuit, licence MIT.",
       ...(EMAIL ? [`Contact : ${EMAIL}`] : []),
       "",
       pkg.description,

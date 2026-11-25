@@ -105,6 +105,12 @@ build/                 icône et écran de démarrage
 3. Ajouter l'entrée dans `EXERCISES` de `main.js` pour le menu et son raccourci.
 4. Ajouter des tests dans `test/unit/` et une vérification dans `test/smoke/smoke.js`.
 
+## Licence
+
+Le code est sous [licence MIT](LICENSE) : libre et gratuit, utilisable, modifiable et partageable, y compris en classe.
+
+Les polices intégrées gardent leur propre licence (SIL Open Font License 1.1, voir `fonts/OFL.txt`).
+
 ## Crédits
 
 Polices Playwrite FR Trad et Playwrite FR Moderne, © The Playwrite Project Authors (TypeTogether), licence SIL Open Font License 1.1.

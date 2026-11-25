@@ -137,7 +137,7 @@
     api.info().then(info => {
       $("help-version").textContent = `Version ${info.version}`;
       $("help-foot").textContent =
-        `${info.name} ${info.version} · ${info.author} · Polices Playwrite (TypeTogether), licence SIL OFL 1.1 · Electron ${info.electron}`;
+        `${info.name} ${info.version} · ${info.author} · Licence MIT · Polices Playwrite (TypeTogether), licence SIL OFL 1.1 · Electron ${info.electron}`;
       document.title = info.name;
       if (info.email) {
         $("help-email").textContent = ` : ${info.email}`;

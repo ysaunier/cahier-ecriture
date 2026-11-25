@@ -18,7 +18,7 @@
     "url": "https://github.com/ysaunier/cahier-ecriture/issues",
     "email": "contact@ysaunier.dev"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win portable nsis",
@@ -34,6 +34,7 @@
     "productName": "Cahier d'écriture",
     "files": [
       "main.js",
+      "LICENSE",
       "preload.js",
       "support.js",
       "package.json",
