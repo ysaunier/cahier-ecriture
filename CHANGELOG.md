@@ -1,6 +1,6 @@
 # Nouveautés
 
-## Prochaine version
+## 1.2.2 — 2026-11-25
 
 - **Confidentialité** : nouvelle section dans l'aide et page `PRIVACY.md` (aucun renseignement personnel recueilli ; seule connexion : la vérification des mises à jour).
 - **Conditions d'utilisation** : logiciel fourni « tel quel », sans garantie ; dans l'aide, la fenêtre « À propos », le menu Aide et `CONDITIONS.md`.
