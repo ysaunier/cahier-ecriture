@@ -57,6 +57,17 @@ test("mise à jour : API GitHub et page de la Release", () => {
   assert.equal(supportLink("release", pkg, env), `${pkg.homepage}/releases/latest`);
 });
 
+test("documents : confidentialité, conditions, sécurité, contribution", () => {
+  const root = path.join(__dirname, "..", "..");
+  for (const f of ["PRIVACY.md", "CONDITIONS.md", "SECURITY.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "LICENSE"]) {
+    assert.ok(fs.existsSync(path.join(root, f)), `${f} manquant`);
+  }
+  assert.equal(supportLink("privacy", pkg, env), `${pkg.homepage}/blob/main/PRIVACY.md`);
+  assert.equal(supportLink("terms", pkg, env), `${pkg.homepage}/blob/main/CONDITIONS.md`);
+  // La politique de confidentialité doit citer la seule requête réseau de l'app
+  assert.ok(fs.readFileSync(path.join(root, "PRIVACY.md"), "utf8").includes("api.github.com"));
+});
+
 test("contact : mailto vers contact@, objet encodé avec %20", () => {
   assert.equal(pkg.bugs.email, "contact@ysaunier.dev");
   const url = contactUrl(pkg, env);

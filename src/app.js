@@ -170,6 +170,8 @@
     });
     $("help-bug").addEventListener("click", () => api.open("bug"));
     $("help-idea").addEventListener("click", () => api.open("idea"));
+    $("help-privacy-link").addEventListener("click", () => api.open("privacy"));
+    $("help-terms-link").addEventListener("click", () => api.open("terms"));
     $("help-mail").addEventListener("click", () => api.open("contact"));
   }
 

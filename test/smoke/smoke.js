@@ -112,6 +112,7 @@ app.whenReady().then(async () => {
     check("aide : version affichée", await waitFor(win, `document.getElementById("help-version").textContent.includes(${JSON.stringify(pkg.version)})`));
     check("aide : courriel de contact affiché", await waitFor(win, `document.getElementById("help-email").textContent.includes(${JSON.stringify(pkg.bugs.email)})`));
     check("aide : bouton « Signaler un problème »", await js(`!document.getElementById("help-bug").hidden`));
+    check("aide : confidentialité et conditions", await js(`Boolean(document.getElementById("help-privacy") && document.getElementById("help-terms-link"))`));
     await js(`document.getElementById("help").close()`);
 
     const pdf = await win.webContents.printToPDF({ pageSize: "Letter", printBackground: true, preferCSSPageSize: true });

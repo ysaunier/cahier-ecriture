@@ -1,6 +1,6 @@
 /* Liens d'assistance : rapport de bug pré-rempli (GitHub) et courriel de contact.
    Les URL sont construites ici, dans le processus principal : la fenêtre ne demande
-   qu'un nom de lien ("bug", "idea", "contact", "home") et ne peut pas faire ouvrir une URL arbitraire. */
+   qu'un nom de lien ("bug", "idea", "contact", "home", "release", "privacy", "terms") et ne peut pas faire ouvrir une URL arbitraire. */
 
 /** Description du système, ex. « macOS 26.7.3 (arm64) » ou « Windows 10.0.22631 (x64) ». */
 function describeSystem({ platform, systemVersion, arch }) {
@@ -71,6 +71,8 @@ function supportLink(name, pkg, env) {
   if (name === "contact") return contactUrl(pkg, env);
   if (name === "home") return pkg.homepage;
   if (name === "release") return `${pkg.homepage}/releases/latest`;
+  if (name === "privacy") return `${pkg.homepage}/blob/main/PRIVACY.md`;
+  if (name === "terms") return `${pkg.homepage}/blob/main/CONDITIONS.md`;
   return null;
 }
 
