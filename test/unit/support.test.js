@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const pkg = require("../../package.json");
-const { describeSystem, bugReportUrl, contactUrl, supportLink } = require("../../support.js");
+const { describeSystem, bugReportUrl, suggestionUrl, contactUrl, supportLink } = require("../../support.js");
 
 const env = { platform: "darwin", systemVersion: "26.7.3", arch: "arm64", electron: "45.4.1" };
 const template = fs.readFileSync(path.join(__dirname, "..", "..", ".github", "ISSUE_TEMPLATE", "bug.yml"), "utf8");
@@ -26,6 +26,18 @@ test("rapport de bug : pointe vers le modèle et remplit des champs qui existent
   }
   assert.equal(url.searchParams.get("version"), `${pkg.version} (Electron 45.4.1)`);
   assert.equal(url.searchParams.get("os"), "macOS 26.7.3 (arm64)");
+});
+
+test("suggestion : pointe vers le modèle d'idée et remplit des champs qui existent", () => {
+  const url = new URL(suggestionUrl(pkg));
+  assert.equal(`${url.origin}${url.pathname}`, `${pkg.bugs.url}/new`);
+  const file = path.join(__dirname, "..", "..", ".github", "ISSUE_TEMPLATE", url.searchParams.get("template"));
+  assert.ok(fs.existsSync(file), "modèle de suggestion absent");
+  const ids = [...fs.readFileSync(file, "utf8").matchAll(/^\s+id:\s*(\S+)/gm)].map(m => m[1]);
+  for (const key of url.searchParams.keys()) {
+    if (key !== "template") assert.ok(ids.includes(key), `le champ « ${key} » n'existe pas dans suggestion.yml`);
+  }
+  assert.equal(supportLink("idea", pkg, env), suggestionUrl(pkg));
 });
 
 test("contact : mailto vers contact@, objet encodé avec %20", () => {

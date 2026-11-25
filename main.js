@@ -1,6 +1,7 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu, shell, nativeImage } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, Menu, shell, nativeImage, screen } = require("electron");
 const path = require("path");
 const fs = require("fs/promises");
+const fsSync = require("fs");
 const pkg = require("./package.json");
 const support = require("./support.js");
 
@@ -76,6 +77,8 @@ function buildMenu() {
       submenu: [
         { label: `À propos de ${APP_NAME}`, click: showAbout },
         { type: "separator" },
+        { label: "Préférences…", accelerator: "Cmd+,", click: () => send("prefs") },
+        { type: "separator" },
         { label: `Masquer ${APP_NAME}`, role: "hide" },
         { label: "Masquer les autres", role: "hideOthers" },
         { label: "Tout afficher", role: "unhide" },
@@ -88,7 +91,12 @@ function buildMenu() {
       submenu: [
         { label: "Imprimer…", accelerator: "CmdOrCtrl+P", click: () => send("print") },
         { label: "Enregistrer en PDF…", accelerator: "CmdOrCtrl+S", click: () => send("pdf") },
-        ...(IS_MAC ? [] : [{ type: "separator" }, { label: "Quitter", accelerator: "Alt+F4", role: "quit" }]),
+        ...(IS_MAC ? [] : [
+          { type: "separator" },
+          { label: "Préférences…", accelerator: "Ctrl+,", click: () => send("prefs") },
+          { type: "separator" },
+          { label: "Quitter", accelerator: "Alt+F4", role: "quit" },
+        ]),
       ],
     },
     // Édition : nécessaire sur macOS pour copier/coller dans les champs
@@ -130,6 +138,7 @@ function buildMenu() {
         { label: "Nouveautés", click: () => send("news") },
         { type: "separator" },
         { label: "Signaler un problème…", click: () => openSupport("bug") },
+        { label: "Proposer une idée…", click: () => openSupport("idea") },
         ...(EMAIL ? [{ label: "Nous écrire…", click: () => openSupport("contact") }] : []),
         { label: "Page du projet sur GitHub", click: () => openSupport("home") },
         ...(IS_MAC ? [] : [{ type: "separator" }, { label: `À propos de ${APP_NAME}`, click: showAbout }]),
@@ -138,10 +147,34 @@ function buildMenu() {
   ]);
 }
 
+/* ---- Taille et position de la fenêtre, retrouvées à la réouverture ---- */
+const BOUNDS_FILE = () => path.join(app.getPath("userData"), "fenetre.json");
+function loadBounds() {
+  try {
+    const b = JSON.parse(fsSync.readFileSync(BOUNDS_FILE(), "utf8"));
+    // On ignore une position hors des écrans actuels (écran débranché, par exemple)
+    const visible = screen.getAllDisplays().some(d => {
+      const a = d.workArea;
+      return b.x < a.x + a.width - 100 && b.x + b.width > a.x + 100 && b.y >= a.y - 20 && b.y < a.y + a.height - 100;
+    });
+    return visible ? b : { width: b.width, height: b.height, maximized: b.maximized };
+  } catch (e) {
+    return {};
+  }
+}
+function saveBounds() {
+  if (!win || win.isDestroyed()) return;
+  const b = { ...win.getNormalBounds(), maximized: win.isMaximized() };
+  try { fsSync.writeFileSync(BOUNDS_FILE(), JSON.stringify(b)); } catch (e) { /* tant pis */ }
+}
+
 function createWindow() {
+  const saved = loadBounds();
   win = new BrowserWindow({
-    width: 1320,
-    height: 920,
+    width: saved.width || 1320,
+    height: saved.height || 920,
+    x: saved.x,
+    y: saved.y,
     minWidth: 960,
     minHeight: 620,
     title: APP_NAME,
@@ -157,7 +190,11 @@ function createWindow() {
   });
   Menu.setApplicationMenu(buildMenu());
   win.loadFile(path.join(__dirname, "src", "index.html"));
-  win.once("ready-to-show", () => win.show());
+  win.once("ready-to-show", () => {
+    if (saved.maximized) win.maximize();
+    win.show();
+  });
+  win.on("close", saveBounds);
   // Aucun lien ne s'ouvre dans l'app : les liens web partent dans le navigateur
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("https://")) shell.openExternal(url);
@@ -176,6 +213,39 @@ ipcMain.handle("cahier:info", () => ({
 
 // La fenêtre ne passe qu'un nom de lien ; l'URL est choisie ici (liste fermée)
 ipcMain.handle("cahier:open", (_e, name) => openSupport(String(name)));
+
+/* ---- Export et import des réglages (fichier JSON choisi par l'utilisateur) ---- */
+ipcMain.handle("cahier:exportSettings", async (_e, json) => {
+  const { canceled, filePath } = await dialog.showSaveDialog(win, {
+    title: "Exporter mes réglages",
+    defaultPath: path.join(app.getPath("documents"), "cahier-reglages.json"),
+    filters: [{ name: "Réglages du Cahier d'écriture", extensions: ["json"] }],
+  });
+  if (canceled || !filePath) return { ok: false };
+  try {
+    await fs.writeFile(filePath, String(json), "utf8");
+    return { ok: true, path: filePath };
+  } catch (err) {
+    return { ok: false, error: String(err.message || err) };
+  }
+});
+
+ipcMain.handle("cahier:importSettings", async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog(win, {
+    title: "Importer des réglages",
+    defaultPath: app.getPath("documents"),
+    filters: [{ name: "Réglages du Cahier d'écriture", extensions: ["json"] }],
+    properties: ["openFile"],
+  });
+  if (canceled || !filePaths.length) return { ok: false };
+  try {
+    const stat = await fs.stat(filePaths[0]);
+    if (stat.size > 1024 * 1024) return { ok: false, error: "fichier trop gros pour des réglages" };
+    return { ok: true, text: await fs.readFile(filePaths[0], "utf8") };
+  } catch (err) {
+    return { ok: false, error: String(err.message || err) };
+  }
+});
 
 ipcMain.handle("cahier:print", (_e, paper) => new Promise(resolve => {
   win.webContents.print({

@@ -1,6 +1,6 @@
 /* Liens d'assistance : rapport de bug pré-rempli (GitHub) et courriel de contact.
    Les URL sont construites ici, dans le processus principal : la fenêtre ne demande
-   qu'un nom de lien ("bug", "contact", "home") et ne peut pas faire ouvrir une URL arbitraire. */
+   qu'un nom de lien ("bug", "idea", "contact", "home") et ne peut pas faire ouvrir une URL arbitraire. */
 
 /** Description du système, ex. « macOS 26.7.3 (arm64) » ou « Windows 10.0.22631 (x64) ». */
 function describeSystem({ platform, systemVersion, arch }) {
@@ -15,6 +15,12 @@ function bugReportUrl(pkg, env) {
     version: `${pkg.version} (Electron ${env.electron})`,
     os: describeSystem(env),
   });
+  return `${pkg.bugs.url}/new?${params}`;
+}
+
+/** Nouvelle issue GitHub avec le modèle « suggestion.yml », version déjà remplie. */
+function suggestionUrl(pkg) {
+  const params = new URLSearchParams({ template: "suggestion.yml", version: pkg.version });
   return `${pkg.bugs.url}/new?${params}`;
 }
 
@@ -36,9 +42,10 @@ function contactUrl(pkg, env) {
 /** Lien autorisé pour un nom donné, ou null si le nom est inconnu. */
 function supportLink(name, pkg, env) {
   if (name === "bug") return bugReportUrl(pkg, env);
+  if (name === "idea") return suggestionUrl(pkg);
   if (name === "contact") return contactUrl(pkg, env);
   if (name === "home") return pkg.homepage;
   return null;
 }
 
-module.exports = { describeSystem, bugReportUrl, contactEmail, contactUrl, supportLink };
+module.exports = { describeSystem, bugReportUrl, suggestionUrl, contactEmail, contactUrl, supportLink };

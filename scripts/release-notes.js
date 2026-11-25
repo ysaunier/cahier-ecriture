@@ -20,6 +20,9 @@ const SCREENSHOTS = `## Aperçu
 | Écriture | Calcul |
 | --- | --- |
 | ![Exercice d'écriture : modèle, trait plein à repasser, tirets, sur réglure Seyès](${SHOTS}/ecriture.png) | ![Exercice de calcul : additions à compléter sur petits carreaux](${SHOTS}/calcul.png) |
+| ![Écriture sur trottoirs québécois : pointillé, deux lignes pleines, pointillé](${SHOTS}/ecriture-trottoirs.png) | ![Additions posées en colonnes, cases de même largeur](${SHOTS}/calcul-colonnes.png) |
+
+<img src="${SHOTS}/preferences.png" alt="Fenêtre Préférences : papier, réglure, en-tête, sauvegarde des réglages" width="380">
 `;
 
 const DOWNLOADS = `## Téléchargement

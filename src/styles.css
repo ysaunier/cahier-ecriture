@@ -83,6 +83,7 @@ textarea {
 .seg label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: -2px; }
 .hint { font-size: 12px; color: var(--muted); margin: 0; }
 .preview-eq { font: 400 20px var(--ui); color: var(--muted); background: var(--bg); border-radius: 8px; padding: 8px 12px; text-align: center; }
+.preview-eq.column { white-space: pre; font-family: Consolas, "Cascadia Mono", monospace; font-size: 17px; line-height: 1.25; text-align: left; width: max-content; margin: 0 auto; padding: 8px 20px; }
 
 .pages { flex: 1; min-width: 0; padding: 24px; overflow: auto; display: flex; flex-direction: column; align-items: center; gap: 24px; }
 .page { background: #fff; box-shadow: 0 2px 12px rgba(20, 30, 60, .15); flex: none; overflow: hidden; }
@@ -97,11 +98,11 @@ textarea {
 }
 
 /* ---------- Aide ---------- */
-dialog#help {
+dialog#help, dialog#prefs {
   width: min(760px, 92vw); max-height: 86vh; border: 0; border-radius: 14px; padding: 0;
   box-shadow: 0 20px 60px rgba(10, 20, 50, .35); color: var(--ink);
 }
-dialog#help::backdrop { background: rgba(20, 28, 45, .45); }
+dialog#help::backdrop, dialog#prefs::backdrop { background: rgba(20, 28, 45, .45); }
 .help-head { display: flex; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: #fff; }
 .help-head img { width: 40px; height: 40px; }
 .help-head h2 { font: 400 22px var(--script); margin: 0; }
@@ -127,3 +128,19 @@ dialog#help::backdrop { background: rgba(20, 28, 45, .45); }
   .page:last-child { break-after: auto; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* ---------- Préférences ---------- */
+dialog#prefs { width: min(560px, 92vw); }
+dialog#prefs label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 13px; max-width: 320px; }
+button.ghost.danger { color: #b42318; border-color: #b42318; }
+.pageinfo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 14px; padding: 8px 10px; background: var(--accent-soft); border-radius: 8px; font-size: 12px; color: var(--ink); }
+button.link { background: none; border: 0; padding: 0; color: var(--accent); font-weight: 600; font-size: 12px; cursor: pointer; text-decoration: underline; flex: none; }
+.ruling-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+dialog#prefs .ruling-list label { max-width: none; flex-direction: row; align-items: flex-start; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; font-weight: 400; }
+.ruling-list label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.ruling-list input { width: auto; flex: none; margin: 3px 0 0; }
+.ruling-list span { display: flex; flex-direction: column; gap: 2px; }
+.ruling-list small { color: var(--muted); font-size: 11px; }
+dialog#prefs label.check { flex-direction: row; align-items: center; font-weight: 400; max-width: none; margin-top: 14px; }
+.field-title { font-weight: 600; font-size: 13px; margin: 14px 0 0; }
+.ruling-list + .hint { margin-top: 8px; }

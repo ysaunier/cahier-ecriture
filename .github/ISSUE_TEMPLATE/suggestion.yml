@@ -1,0 +1,58 @@
+name: Proposer une idée
+description: Un nouvel exercice, un réglage qui manque, une amélioration d'une feuille…
+title: "[Idée] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de proposer une idée ! Les retours d'enseignants et de parents aident beaucoup.
+        N'ajoute pas d'informations personnelles (nom d'enfant, école, adresse…) : les issues sont publiques.
+
+  - type: dropdown
+    id: exercice
+    attributes:
+      label: Ça concerne
+      options:
+        - L'exercice d'écriture
+        - L'exercice de calcul
+        - Un nouvel exercice
+        - L'impression ou le PDF
+        - L'application en général (réglages, menus, installation…)
+    validations:
+      required: true
+
+  - type: textarea
+    id: idee
+    attributes:
+      label: Ton idée
+      description: Ce que tu aimerais pouvoir faire, avec un exemple concret si possible.
+      placeholder: "Ex. : pouvoir poser les calculs en colonnes plutôt qu'en ligne."
+    validations:
+      required: true
+
+  - type: textarea
+    id: pourquoi
+    attributes:
+      label: Pour quoi faire ?
+      description: Le besoin en classe ou à la maison (niveau, méthode utilisée, habitudes de l'école…).
+      placeholder: "Ex. : en 1re année au Québec, les élèves écrivent sur des trottoirs."
+    validations:
+      required: false
+
+  - type: textarea
+    id: exemple
+    attributes:
+      label: Exemple de feuille
+      description: Glisse ici une photo ou un scan d'une feuille modèle (sans nom d'élève), ça aide beaucoup.
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: Version de l'application
+      description: Visible dans Aide › À propos. Facultatif.
+      placeholder: "1.2.0"
+    validations:
+      required: false

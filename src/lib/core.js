@@ -74,6 +74,16 @@
       container.appendChild(div);
       return { div, svg, W, H, top, bottom, marginX };
     },
+    /**
+     * Un trottoir québécois : pointillé, plein, plein, pointillé, à intervalles égaux (band).
+     * y est la ligne de base (2e ligne pleine).
+     */
+    trottoir(svg, y, band, x1, x2) {
+      [[-2, true], [-1, false], [0, false], [1, true]].forEach(([k, dotted]) => C.el("line", {
+        x1, x2, y1: y + k * band, y2: y + k * band, stroke: "#3b4252", "stroke-width": dotted ? 0.28 : 0.32,
+        "stroke-dasharray": dotted ? "0.7 0.9" : null,
+      }, svg));
+    },
     /** Ligne « Prénom / Date » en haut de page. */
     header(svg, x, y) {
       C.el("text", { x, y, "font-family": "Segoe UI, sans-serif", "font-size": 4, fill: "#5d6679" }, svg)
@@ -106,7 +116,65 @@
     },
     get(key, fallback) { try { return localStorage.getItem(key) ?? fallback; } catch (e) { return fallback; } },
     set(key, value) { try { localStorage.setItem(key, value); } catch (e) {} },
+    /** Toutes les préférences de l'application (clés « cahier… »), pour l'export. */
+    all() {
+      const out = {};
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k.startsWith("cahier")) out[k] = localStorage.getItem(k);
+        }
+      } catch (e) {}
+      return out;
+    },
+    /** Remplace toutes les préférences (null : retour aux réglages d'origine). */
+    replaceAll(values) {
+      try {
+        for (const k of Object.keys(C.store.all())) localStorage.removeItem(k);
+        for (const [k, v] of Object.entries(values || {})) {
+          if (k.startsWith("cahier") && typeof v === "string") localStorage.setItem(k, v);
+        }
+      } catch (e) {}
+    },
   };
+
+  /* ---------- Préférences communes à tous les exercices : papier et réglure ---------- */
+  const PREFS_KEY = "cahier-preferences";
+  const RULINGS = {
+    seyes: "Seyès (grands carreaux)",
+    trottoir: "Trottoirs (Québec)",
+    grid: "Petits carreaux (5 mm)",
+    none: "Blanc",
+  };
+  const listeners = [];
+  C.prefs = {
+    RULINGS,
+    paper: "letter",
+    ruling: "seyes",
+    header: true,
+    load() {
+      let saved = {};
+      try { saved = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}"); } catch (e) {}
+      C.prefs.paper = PAPERS[saved.paper] ? saved.paper : "letter";
+      C.prefs.ruling = RULINGS[saved.ruling] ? saved.ruling : "seyes";
+      C.prefs.header = saved.header !== false;
+    },
+    /** Change une préférence, l'enregistre et redessine tous les exercices. */
+    set(key, value) {
+      if (key === "paper" && !PAPERS[value]) return;
+      if (key === "ruling" && !RULINGS[value]) return;
+      if (key === "header") value = Boolean(value);
+      C.prefs[key] = value;
+      C.store.set(PREFS_KEY, JSON.stringify({ paper: C.prefs.paper, ruling: C.prefs.ruling, header: C.prefs.header }));
+      listeners.forEach(fn => fn());
+    },
+    onChange(fn) { listeners.push(fn); },
+    /** Texte court : « US Letter · Trottoirs (Québec) », ou le papier seul. */
+    summary(withRuling = true) {
+      return withRuling ? `${PAPERS[C.prefs.paper].label} · ${RULINGS[C.prefs.ruling]}` : PAPERS[C.prefs.paper].label;
+    },
+  };
+  C.prefs.load();
 
   /** Relie tous les champs d'un panneau : mémorisation + rendu différé. */
   C.bindPanel = function (panel, onChange) {
